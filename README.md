@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🧠 Składnikowo.pl
 
-## Getting Started
+**Poznaj, co naprawdę jesz - i co dajesz swojemu pupilowi!**  
+Składnikowo.pl to inteligentny analizator składu produktów spożywczych i karm dla zwierząt.  
+Wystarczy wkleić skład z etykiety, a my pokażemy Ci, co kryje się w środku.
 
-First, run the development server:
+## 🌐 Demo
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+🔗 [https://krzx.top/skladnikowo](https://krzx.top/skladnikowo) _(wkrótce)_
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ✨ Co potrafi Składnikowo.pl
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- 🔍 **Analiza składu** - rozbijamy tekst na składniki, dodatki, wartości analityczne i tłumaczymy ich funkcję.
+- 🧩 **Ocena jakości produktu** - dowiesz się, które składniki są dobre, neutralne lub potencjalnie szkodliwe.
+- 🐾 **Obsługa karm dla zwierząt** - dedykowane modele rozumieją terminologię karm (mięso, produkty pochodne, dodatki paszowe).
+- 👩‍🍳 **Analiza produktów spożywczych dla ludzi** - sprawdź, czy Twój ulubiony produkt jest naprawdę zdrowy.
+- 📊 **Podział analityczny** - prezentacja danych takich jak białko, tłuszcze, włókno, popiół czy wilgotność.
+- ⚡ **Szybkość działania** - analiza odbywa się w kilka sekund dzięki inteligentnemu modelowi AI.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🤖 Sztuczna inteligencja w Składnikowo.pl
 
-## Learn More
+Składnikowo.pl wykorzystuje modele AI do analizy językowej składów produktów.  
+System rozumie kontekst, potrafi rozpoznać synonimy, interpretować proporcje i oceniać znaczenie poszczególnych składników.
 
-To learn more about Next.js, take a look at the following resources:
+Dzięki temu:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- AI potrafi odróżnić naturalne składniki od syntetycznych.
+- Wykrywa niejasne sformułowania producentów (np. "produkty pochodzenia zwierzęcego").
+- Automatycznie przypisuje każdemu składnikowi kategorie jakości (zdrowy, neutralny, ryzykowny).
+- Uczy się na podstawie nowych produktów i opinii użytkowników, stale poprawiając swoje wyniki.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 💡 Dlaczego warto
 
-## Deploy on Vercel
+Nie musisz już googlować każdego składnika osobno.  
+Składnikowo.pl tłumaczy Ci całość w prosty, zrozumiały sposób.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Dowiesz się:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- czy dany konserwant jest bezpieczny,
+- jak wypada karma Twojego kota na tle innych,
+  ... i wiele innych!
+
+## 🧰 Technologie
+
+Projekt stworzony z wykorzystaniem nowoczesnego stacku:
+
+- ⚛️ **Next.js + React (TypeScript)**
+- 🎨 **Tailwind CSS**
+- 🧠 **AI**
+
+## 🚀 Wizja
+
+celem jest stworzenie **najdokładniejszego analizatora składów w Polsce**.  
+Chcemy, by każdy - zarówno właściciel kota, jak i miłośnik zdrowego jedzenia - mógł **rozumieć to, co kupuje**.
