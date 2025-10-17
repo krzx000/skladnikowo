@@ -1,4 +1,10 @@
+"use client";
+import { useState } from "react";
+import { Picker } from "./components/Picker";
+
 export default function Home() {
+  const [selectedValue, setSelectedValue] = useState("humans");
+
   return (
     <div className="w-full">
       <section className="inline-flex flex-col items-center self-stretch justify-start gap-4">
@@ -23,23 +29,15 @@ export default function Home() {
           </div>
         </div>
         <div className="flex flex-col items-center self-stretch justify-start gap-4">
-          <div className="p-1 bg-orange/20 rounded-full shadow-[0px_0px_12px_0px_rgba(249,192,154,0.10)] inline-flex justify-start items-start gap-[0px]">
-            <div
-              data-variant="2"
-              className="px-6 py-2 bg-white rounded-full shadow-[0px_0px_12px_0px_rgba(249,192,154,0.10)] inline-flex flex-col justify-center items-center"
-            >
-              <div className="justify-center text-sm font-semibold leading-tight text-center text-primary">
-                Żywność dla ludzi
-              </div>
-            </div>
-            <div
-              data-variant="3"
-              className="inline-flex flex-col items-center justify-center px-6 py-2 rounded-full"
-            >
-              <div className="justify-center text-sm font-semibold leading-tight text-center text-secondary">
-                Karma dla zwierząt
-              </div>
-            </div>
+          <div>
+            <Picker
+              onSelect={(value) => setSelectedValue(value)}
+              selectedValue={selectedValue}
+              items={[
+                { label: "Żywność dla ludzi", value: "humans" },
+                { label: "Karma dla zwierząt", value: "animals" },
+              ]}
+            />
           </div>
           <div className="w-full max-w-[700px] relative flex flex-col justify-start items-start">
             <div className="self-stretch h-16 pl-6 pr-40 py-5 bg-white rounded-[36px] shadow-[0px_0px_12px_0px_rgba(249,192,154,0.10)] inline-flex justify-center items-start overflow-hidden">
