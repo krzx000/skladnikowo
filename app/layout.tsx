@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
+import { Navbar } from "./layout/Navbar";
 
 const manrope = Manrope({
   variable: "--font-manrope",
   subsets: ["latin"],
 });
 export const metadata: Metadata = {
+  metadataBase: new URL("https://skladnikowo.krzx.top"),
   title: "Składnikowo - Analizator składów produktów i karm dla zwierząt",
   description:
     "Składnikowo to inteligentny analizator składu produktów spożywczych i karm dla zwierząt. Sprawdź, co naprawdę jesz i co podajesz swojemu pupilowi. Analiza składników, dodatków i wartości analitycznych w kilka sekund dzięki AI.",
@@ -87,6 +89,13 @@ export const metadata: Metadata = {
     locale: "pl_PL",
     type: "website",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Składnikowo - Analizator składów produktów i karm dla zwierząt",
+    description:
+      "Analizuj skład produktów spożywczych i karm dla zwierząt w kilka sekund. Dowiedz się, co naprawdę jesz i co podajesz swojemu pupilowi dzięki AI.",
+    images: ["/og-image.png"],
+  },
   icons: {
     icon: "/icon.png",
     apple: "/apple-icon.png",
@@ -100,7 +109,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pl">
-      <body className={`${manrope.variable}  antialiased`}>{children}</body>
+      <body className={`${manrope.variable}  antialiased`}>
+        <Navbar />
+        <main className="flex justify-center w-full">
+          <div className="flex flex-col justify-center w-full max-w-5xl gap-32 py-24 pt-40">
+            {children}
+          </div>
+        </main>
+      </body>
     </html>
   );
 }
