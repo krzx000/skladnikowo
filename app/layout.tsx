@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "./layout/Navbar";
+import { Footer } from "./layout/Footer";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -98,7 +99,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: "/icon.png",
-    apple: "/apple-icon.png",
+    apple: "/icon.png",
   },
 };
 
@@ -116,6 +117,7 @@ export default function RootLayout({
             {children}
           </div>
         </main>
+        <Footer />
       </body>
     </html>
   );

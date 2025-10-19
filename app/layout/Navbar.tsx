@@ -23,8 +23,8 @@ const NavItem = ({ href, label }: { href: string; label: string }) => {
 
 export const Navbar = () => {
   return (
-    <header className="fixed w-full">
-      <nav className="inline-flex flex-col items-center justify-center w-full border-b bg-orange/5 border-orange/20 backdrop-blur-sm">
+    <header className="fixed w-full z-[100000]">
+      <nav className="inline-flex flex-col items-center justify-center w-full border-b bg-orange/5 border-orange/20 backdrop-blur-xl">
         <div className="inline-flex items-center justify-between w-full max-w-5xl py-4">
           <div className="flex items-center justify-start gap-3">
             <Link href={"/"}>
