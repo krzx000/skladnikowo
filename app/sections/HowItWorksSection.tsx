@@ -1,77 +1,81 @@
 import { Icon } from "../components/Icon";
 
+const Step = ({
+  number,
+  title,
+  description,
+}: {
+  number: number;
+  title: string;
+  description: string;
+}) => (
+  <article className="flex flex-col items-center self-stretch w-full gap-4 p-8 bg-white rounded-4xl">
+    <Icon className="bg-orange/25 aspect-square" ariaLabel={`Krok ${number}`}>
+      <span className="text-xl font-bold text-secondary/75" aria-hidden="true">
+        {number}
+      </span>
+    </Icon>
+    <div className="flex flex-col items-center self-stretch gap-2">
+      <h3 className="text-lg font-bold text-center text-primary">{title}</h3>
+      <p className="text-sm text-center text-secondary">{description}</p>
+    </div>
+  </article>
+);
+
 export const HowItWorksSection = () => {
+  const steps = [
+    {
+      number: 1,
+      title: "Wybierz i wprowadź",
+      description: "Wybierz typ analizy i wpisz składniki z etykiety produktu.",
+    },
+    {
+      number: 2,
+      title: "Otrzymaj analizę",
+      description:
+        "Otrzymaj szczegółowy raport o wartości odżywczej, korzyściach i potencjalnych ryzykach.",
+    },
+    {
+      number: 3,
+      title: "Podejmuj świadome decyzje",
+      description:
+        "Zadbaj o zdrowie swoje i swojego pupila dzięki analizie opartej na danych.",
+    },
+  ];
+
   return (
-    <section className="inline-flex flex-col items-center justify-start gap-4">
-      <div className="flex flex-col items-center justify-start w-full max-w-2xl">
-        <div className="justify-center text-3xl font-extrabold text-center text-primary">
+    <section
+      className="flex flex-col items-center gap-4"
+      aria-labelledby="how-it-works-heading"
+    >
+      {/* Nagłówek sekcji */}
+      <div className="flex flex-col items-center w-full max-w-2xl">
+        <h2
+          id="how-it-works-heading"
+          className="text-3xl font-extrabold text-center text-primary"
+        >
           Jak to działa?
-        </div>
+        </h2>
       </div>
-      <div className="flex flex-col items-center justify-start w-full max-w-2xl">
-        <div className="justify-center text-center">
-          <span className="text-lg font-normal leading-7 text-secondary">
-            Nasz prosty, trzystopniowy proces sprawia, że zrozumienie składu
-            Twojego jedzenia i karmy dla pupila staje się wyjątkowo łatwe.
-          </span>
-        </div>
+
+      {/* Opis */}
+      <div className="flex flex-col items-center w-full max-w-2xl">
+        <p className="text-lg text-center text-secondary">
+          Nasz prosty, trzystopniowy proces sprawia, że zrozumienie składu
+          Twojego jedzenia i karmy dla pupila staje się wyjątkowo łatwe.
+        </p>
       </div>
-      <div className="justify-start w-full gap-4 flexitems-center">
-        <div className="inline-flex items-center justify-between w-full gap-4 mt-4">
-          <div className="inline-flex flex-col items-center self-stretch justify-start w-full gap-4 p-8 bg-white rounded-4xl">
-            <Icon className="bg-orange/25 aspect-square">
-              <span className="text-xl font-bold text-secondary/75">1</span>
-            </Icon>
-            <div className="flex flex-col items-start self-stretch justify-start gap-2">
-              <div className="flex flex-col items-center self-stretch justify-start">
-                <div className="justify-center text-lg font-bold text-center text-primary">
-                  Wybierz i wprowadź
-                </div>
-              </div>
-              <div className="flex flex-col items-center self-stretch justify-start">
-                <div className="self-stretch justify-center text-sm font-normal text-center text-secondary ">
-                  Wybierz typ analizy i wpisz składniki z etykiety produktu.
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="inline-flex flex-col items-center self-stretch justify-start w-full gap-4 p-8 bg-white rounded-4xl">
-            <Icon className="bg-orange/25 aspect-square">
-              <span className="text-xl font-bold text-secondary/75">2</span>
-            </Icon>
-            <div className="flex flex-col items-start self-stretch justify-start gap-2">
-              <div className="flex flex-col items-center self-stretch justify-start">
-                <div className="justify-center text-lg font-bold text-center text-primary">
-                  Otrzymaj analizę
-                </div>
-              </div>
-              <div className="flex flex-col items-center self-stretch justify-start">
-                <div className="self-stretch justify-center text-sm font-normal text-center text-secondary ">
-                  Otrzymaj szczegółowy raport o wartości odżywczej, korzyściach
-                  i potencjalnych ryzykach.
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="inline-flex flex-col items-center self-stretch justify-start w-full gap-4 p-8 bg-white rounded-4xl">
-            <Icon className="bg-orange/25 aspect-square">
-              <span className="text-xl font-bold text-secondary/75">3</span>
-            </Icon>
-            <div className="flex flex-col items-start self-stretch justify-start gap-2">
-              <div className="flex flex-col items-center self-stretch justify-start">
-                <div className="justify-center text-lg font-bold text-center text-primary">
-                  Podejmuj świadome decyzje
-                </div>
-              </div>
-              <div className="flex flex-col items-center self-stretch justify-start">
-                <div className="self-stretch justify-center text-sm font-normal text-center text-secondary ">
-                  Zadbaj o zdrowie swoje i swojego pupila dzięki analizie
-                  opartej na danych.
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+
+      {/* Kroki procesu */}
+      <div className="flex items-stretch justify-between w-full gap-4 mt-4">
+        {steps.map((step) => (
+          <Step
+            key={step.number}
+            number={step.number}
+            title={step.title}
+            description={step.description}
+          />
+        ))}
       </div>
     </section>
   );

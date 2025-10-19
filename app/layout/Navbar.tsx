@@ -8,54 +8,63 @@ import { Icon } from "../components/Icon";
 
 const NavItem = ({ href, label }: { href: string; label: string }) => {
   const pathname = usePathname();
+  const isActive = pathname === href;
+
   return (
-    <Link href={href} replace>
-      <div
-        className={`justify-center text-primary text-sm leading-tight ${
-          pathname === href ? "font-bold" : "font-medium"
+    <li>
+      <Link
+        href={href}
+        replace
+        className={`text-primary text-sm ${
+          isActive ? "font-bold" : "font-medium"
         }`}
+        aria-current={isActive ? "page" : undefined}
       >
         <FlipLink>{label}</FlipLink>
-      </div>
-    </Link>
+      </Link>
+    </li>
   );
 };
 
 export const Navbar = () => {
   return (
-    <header className="fixed w-full z-[100000]">
-      <nav className="inline-flex flex-col items-center justify-center w-full border-b bg-orange/5 border-orange/20 backdrop-blur-xl">
-        <div className="inline-flex items-center justify-between w-full max-w-5xl py-4">
-          <div className="flex items-center justify-start gap-3">
-            <Link href={"/"}>
-              <Image src={"/logo.svg"} alt="Logo" width={220} height={40} />
-            </Link>
-          </div>
-          <div className="flex items-center justify-start gap-8">
-            <ul className="flex items-center justify-start gap-8">
-              <li>
-                <NavItem href="/" label="Analiza" />
-              </li>
-              <li>
-                <NavItem href="/jak-to-dziala" label="Jak to działa" />
-              </li>
-              <li>
-                <NavItem href="/faq" label="FAQ" />
-              </li>
-              <li>
-                <NavItem href="/kontakt" label="Kontakt" />
-              </li>
-            </ul>
-          </div>
-          <div className="flex items-center">
-            <Icon
-              type="button"
-              className="bg-orange/25 hover:bg-orange/35"
-              onClick={() => console.log("Toggle theme")}
-            >
-              <SunMoon className="text-secondary/75" strokeWidth={1.75} />
-            </Icon>
-          </div>
+    <header className="fixed top-0 left-0 right-0 w-full z-[100000]">
+      <nav
+        className="flex flex-col items-center w-full border-b bg-orange/5 border-orange/20 backdrop-blur-xl"
+        aria-label="Nawigacja główna"
+      >
+        <div className="flex items-center justify-between w-full max-w-5xl py-4">
+          {/* Logo */}
+          <Link href="/" aria-label="Strona główna Składnikowo">
+            <Image
+              src="/logo.svg"
+              alt="Logo Składnikowo"
+              width={220}
+              height={40}
+              priority
+            />
+          </Link>
+
+          {/* Menu nawigacyjne */}
+          <ul className="flex items-center gap-8" role="list">
+            <NavItem href="/" label="Analiza" />
+            <NavItem href="/jak-to-dziala" label="Jak to działa" />
+            <NavItem href="/faq" label="FAQ" />
+            <NavItem href="/kontakt" label="Kontakt" />
+          </ul>
+
+          {/* Przycisk motywu */}
+          <Icon
+            type="button"
+            className="p-2 transition-colors rounded-full bg-orange/25 hover:bg-orange/35"
+            onClick={() => console.log("Toggle theme")}
+          >
+            <SunMoon
+              className="text-secondary/75"
+              strokeWidth={1.75}
+              aria-label="Przełącz motyw"
+            />
+          </Icon>
         </div>
       </nav>
     </header>

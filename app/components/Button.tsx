@@ -5,22 +5,30 @@ interface ButtonProps
 }
 
 export const Button: React.FC<ButtonProps> = ({
-  disabled,
+  disabled = false,
   children,
-  icon,
-  className,
+  icon = false,
+  className = "",
   ...props
 }) => {
+  const baseClassName =
+    `px-6 py-3.5 text-sm font-bold text-white whitespace-nowrap rounded-full bg-orange transition-all 
+    ${icon ? "flex items-center gap-2" : ""} 
+    ${disabled ? "cursor-not-allowed bg-orange/75" : "cursor-pointer"} 
+    ${
+      !disabled
+        ? "hover:scale-x-[1.025] hover:scale-y-[1.05] active:scale-x-[1.1] active:scale-y-[0.95]"
+        : ""
+    } 
+    ${className}`
+      .trim()
+      .replace(/\s+/g, " ");
+
   return (
     <button
+      type="button"
       disabled={disabled}
-      className={`${
-        icon ? "flex items-center gap-2" : ""
-      }  px-6 py-3.5 text-white ${
-        disabled ? "cursor-not-allowed" : "cursor-pointer"
-      } rounded-full bg-orange font-bold text-sm whitespace-nowrap enabled:hover:scale-x-[1.025] enabled:hover:scale-y-[1.05] enabled:active:scale-y-[0.95] enabled:active:scale-x-[1.1] disabled:bg-orange/75 transition-all ${
-        className || ""
-      }`}
+      className={baseClassName}
       {...props}
     >
       {children}

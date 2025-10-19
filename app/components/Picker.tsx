@@ -65,7 +65,10 @@ export const Picker = ({
     <div
       ref={containerRef}
       className="relative flex p-1 rounded-full bg-orange/20 backdrop-blur-md"
+      role="group"
+      aria-label="Wybierz typ analizy"
     >
+      {/* Animowany blob wskaźnik */}
       <motion.span
         className="absolute z-0 bg-white rounded-full"
         animate={{
@@ -79,29 +82,34 @@ export const Picker = ({
           type: "spring",
           stiffness: 400,
           damping: 30,
-          scale: { duration: 0.2 },
         }}
+        aria-hidden="true"
       />
 
-      {items.map((item) => (
-        <label
-          key={item.value}
-          data-value={item.value}
-          className={`z-10 px-6 py-2 text-sm rounded-full cursor-pointer font-semibold transition-all ${
-            selectedValue === item.value ? "text-primary" : "text-secondary"
-          }`}
-        >
-          <input
-            type="radio"
-            name={name}
-            value={item.value}
-            checked={selectedValue === item.value}
-            onChange={handleChange}
-            className="sr-only"
-          />
-          <span>{item.label}</span>
-        </label>
-      ))}
+      {items.map((item) => {
+        const isSelected = selectedValue === item.value;
+
+        return (
+          <label
+            key={item.value}
+            data-value={item.value}
+            className={`relative z-10 px-6 py-2 text-sm rounded-full cursor-pointer font-semibold transition-colors ${
+              isSelected ? "text-primary" : "text-secondary"
+            }`}
+          >
+            <input
+              type="radio"
+              name={name}
+              value={item.value}
+              checked={isSelected}
+              onChange={handleChange}
+              className="sr-only"
+              aria-label={item.label}
+            />
+            {item.label}
+          </label>
+        );
+      })}
     </div>
   );
 };

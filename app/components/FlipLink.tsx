@@ -4,58 +4,54 @@ const DURATION = 0.25;
 const STAGGER = 0.025;
 
 export const FlipLink = ({ children }: { children: string }) => {
+  const letters = children.split("");
+
   return (
     <motion.span
       initial="initial"
       whileHover="hovered"
-      className="relative block overflow-hidden "
-      style={{
-        lineHeight: 0.95,
-      }}
+      className="relative block overflow-hidden"
+      style={{ lineHeight: 0.95 }}
+      aria-label={children}
     >
-      <div>
-        {children.split("").map((l, i) => (
+      {/* Warstwa początkowa */}
+      <div aria-hidden="true">
+        {letters.map((letter, index) => (
           <motion.span
             variants={{
-              initial: {
-                y: 0,
-              },
-              hovered: {
-                y: l === " " ? 0 : "-100%",
-              },
+              initial: { y: 0 },
+              hovered: { y: letter === " " ? 0 : "-100%" },
             }}
             transition={{
               duration: DURATION,
               ease: "easeInOut",
-              delay: STAGGER * i,
+              delay: STAGGER * index,
             }}
-            className="inline-block "
-            key={i}
+            className="inline-block"
+            key={`initial-${index}`}
           >
-            {l === " " ? "\u00A0" : l}
+            {letter === " " ? "\u00A0" : letter}
           </motion.span>
         ))}
       </div>
-      <div className="absolute inset-0">
-        {children.split("").map((l, i) => (
+
+      {/* Warstwa hover */}
+      <div className="absolute inset-0" aria-hidden="true">
+        {letters.map((letter, index) => (
           <motion.span
             variants={{
-              initial: {
-                y: l === " " ? 0 : "100%",
-              },
-              hovered: {
-                y: 0,
-              },
+              initial: { y: letter === " " ? 0 : "100%" },
+              hovered: { y: 0 },
             }}
             transition={{
               duration: DURATION,
               ease: "easeInOut",
-              delay: STAGGER * i,
+              delay: STAGGER * index,
             }}
             className="inline-block"
-            key={i}
+            key={`hover-${index}`}
           >
-            {l === " " ? "\u00A0" : l}
+            {letter === " " ? "\u00A0" : letter}
           </motion.span>
         ))}
       </div>
