@@ -54,7 +54,7 @@ export const AnalyzeInput = () => {
           className={`${textareaBaseClasses} ${
             isMultiline ? "w-full px-4" : "flex-1"
           }`}
-          placeholder="Wklej składniki... \"
+          placeholder="Wpisz tutaj składniki produktu..."
           rows={1}
         />
 

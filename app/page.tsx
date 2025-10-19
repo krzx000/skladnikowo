@@ -112,12 +112,12 @@ export default function Home() {
               </Icon>
               <div className="flex flex-col items-start self-stretch justify-start gap-2">
                 <div className="flex flex-col items-center self-stretch justify-start">
-                  <div className="justify-center text-lg font-bold text-center text-zinc-700">
+                  <div className="justify-center text-lg font-bold text-center text-primary">
                     Wybierz i wprowadź
                   </div>
                 </div>
                 <div className="flex flex-col items-center self-stretch justify-start">
-                  <div className="self-stretch justify-center text-sm font-normal text-center text-stone-500 ">
+                  <div className="self-stretch justify-center text-sm font-normal text-center text-secondary ">
                     Wybierz typ analizy i wpisz składniki z etykiety produktu.
                   </div>
                 </div>
@@ -129,12 +129,12 @@ export default function Home() {
               </Icon>
               <div className="flex flex-col items-start self-stretch justify-start gap-2">
                 <div className="flex flex-col items-center self-stretch justify-start">
-                  <div className="justify-center text-lg font-bold text-center text-zinc-700">
+                  <div className="justify-center text-lg font-bold text-center text-primary">
                     Otrzymaj analizę
                   </div>
                 </div>
                 <div className="flex flex-col items-center self-stretch justify-start">
-                  <div className="self-stretch justify-center text-sm font-normal text-center text-stone-500 ">
+                  <div className="self-stretch justify-center text-sm font-normal text-center text-secondary ">
                     Otrzymaj szczegółowy raport o wartości odżywczej,
                     korzyściach i potencjalnych ryzykach.
                   </div>
@@ -147,12 +147,12 @@ export default function Home() {
               </Icon>
               <div className="flex flex-col items-start self-stretch justify-start gap-2">
                 <div className="flex flex-col items-center self-stretch justify-start">
-                  <div className="justify-center text-lg font-bold text-center text-zinc-700">
+                  <div className="justify-center text-lg font-bold text-center text-primary">
                     Podejmuj świadome decyzje
                   </div>
                 </div>
                 <div className="flex flex-col items-center self-stretch justify-start">
-                  <div className="self-stretch justify-center text-sm font-normal text-center text-stone-500 ">
+                  <div className="self-stretch justify-center text-sm font-normal text-center text-secondary ">
                     Zadbaj o zdrowie swoje i swojego pupila dzięki analizie
                     opartej na danych.
                   </div>
