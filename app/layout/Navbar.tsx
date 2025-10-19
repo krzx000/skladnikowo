@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FlipLink } from "../components/FlipLink";
+import { Icon } from "../components/Icon";
 
 const NavItem = ({ href, label }: { href: string; label: string }) => {
   const pathname = usePathname();
@@ -47,9 +48,13 @@ export const Navbar = () => {
             </ul>
           </div>
           <div className="flex items-center">
-            <button className="p-2 transition-all rounded-full cursor-pointer bg-orange/25 hover:bg-orange/35 hover:scale-105 active:scale-95">
+            <Icon
+              type="button"
+              className="bg-orange/25 hover:bg-orange/35"
+              onClick={() => console.log("Toggle theme")}
+            >
               <SunMoon className="text-secondary/75" strokeWidth={1.75} />
-            </button>
+            </Icon>
           </div>
         </div>
       </nav>

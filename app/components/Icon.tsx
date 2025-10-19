@@ -11,9 +11,10 @@ export const Icon: React.FC<IconProps> = ({
   onClick,
   type = "span",
 }) => {
-  const combinedClassName = `inline-flex items-center justify-center ${
-    onClick ? "cursor-pointer" : ""
-  } ${className}`.trim();
+  const combinedClassName =
+    `p-2 transition-all rounded-full hover:scale-105 active:scale-95 inline-flex items-center justify-center ${
+      onClick ? "cursor-pointer" : ""
+    } ${className}`.trim();
 
   if (type === "button") {
     return (
