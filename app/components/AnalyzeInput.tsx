@@ -31,7 +31,7 @@ export const AnalyzeInput = () => {
   }, [value]);
 
   const textareaBaseClasses =
-    "pl-4 py-2 outline-none resize-none overflow-hidden rounded-3xl text-base leading-6 min-h-[24px]";
+    "pl-4 py-2 outline-none resize-none overflow-hidden rounded-4xl text-base leading-6 min-h-[24px]";
 
   const handleClick = () => {
     if (!value.trim()) return;

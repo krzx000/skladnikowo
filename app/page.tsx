@@ -2,20 +2,23 @@
 import { useState } from "react";
 import { Picker } from "./components/Picker";
 import { AnalyzeInput } from "./components/AnalyzeInput";
+import { Icon } from "./components/Icon";
+import { Clock3, PawPrint, ShieldCheck } from "lucide-react";
 
 export default function Home() {
   const [selectedValue, setSelectedValue] = useState("humans");
 
   return (
-    <div className="w-full">
-      <section className="inline-flex flex-col items-center self-stretch justify-start gap-4">
+    <div className="flex flex-col justify-center w-full gap-32">
+      {/* Hero section */}
+      <section className="inline-flex flex-col items-center justify-start gap-4">
         <div className="flex flex-col items-center justify-start w-full max-w-2xl">
-          <div className="self-stretch text-center justify-center text-primary text-6xl font-extrabold  leading-[60px]">
+          <div className="justify-center text-6xl font-extrabold text-center text-primary">
             Wiesz, co jesz.
           </div>
         </div>
         <div className="flex flex-col items-center justify-start w-full max-w-2xl">
-          <div className="self-stretch justify-center text-center">
+          <div className="justify-center text-center">
             <span className="text-lg font-normal leading-7 text-secondary">
               Uzyskaj{" "}
             </span>
@@ -29,7 +32,7 @@ export default function Home() {
             </span>
           </div>
         </div>
-        <div className="flex flex-col items-center self-stretch justify-start gap-4">
+        <div className="flex flex-col items-center justify-start w-full gap-4">
           <div>
             <Picker
               onSelect={(value) => setSelectedValue(value)}
@@ -43,62 +46,115 @@ export default function Home() {
           <div className="w-full max-w-2xl">
             <AnalyzeInput />
           </div>
-          <div className="flex flex-col items-start self-stretch justify-start pt-4">
-            <div className="inline-flex items-center self-stretch justify-between">
-              <div className="flex items-center justify-start h-16 gap-4">
-                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-orange/20">
-                  <div data-variant="1" className="relative w-6 h-6">
-                    <div className="w-4 h-5 left-[3px] top-[3.75px] absolute bg-orange" />
+          <div className="inline-flex items-center justify-between w-full mt-4">
+            <div className="flex items-center justify-start gap-4">
+              <Icon className="bg-orange/25 hover:bg-orange/35">
+                <ShieldCheck className="text-secondary/75" strokeWidth={1.75} />
+              </Icon>
+              <div className="inline-flex flex-col items-start justify-start">
+                <div className="justify-center text-base font-bold leading-normal text-primary">
+                  Niezawodne i szybkie
+                </div>
+                <div className="justify-center text-sm font-normal leading-tight text-secondary">
+                  Dokładne wyniki w zaledwie kilka minut.
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center justify-start gap-4">
+              <Icon className="bg-orange/25 hover:bg-orange/35">
+                <Clock3 className="text-secondary/75" strokeWidth={1.75} />
+              </Icon>
+              <div className="inline-flex flex-col items-start justify-start">
+                <div className="justify-center text-base font-bold leading-normal text-primary">
+                  Oszczędza Twój czas
+                </div>
+                <div className="justify-center text-sm font-normal leading-tight text-secondary">
+                  Wszystkie informacje w jednym miejscu.
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center justify-start gap-4">
+              <Icon className="bg-orange/25 hover:bg-orange/35">
+                <PawPrint className="text-secondary/75" strokeWidth={1.75} />
+              </Icon>
+              <div className="inline-flex flex-col items-start justify-start">
+                <div className="justify-center text-base font-bold leading-normal text-primary">
+                  Dla ludzi i zwierząt
+                </div>
+                <div className="justify-center text-sm font-normal leading-tight text-secondary">
+                  Pełna analiza bez ograniczeń.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      {/* How it works */}
+      <section className="inline-flex flex-col items-center justify-start gap-4">
+        <div className="flex flex-col items-center justify-start w-full max-w-2xl">
+          <div className="justify-center text-3xl font-extrabold text-center text-primary">
+            Jak to działa?
+          </div>
+        </div>
+        <div className="flex flex-col items-center justify-start w-full max-w-2xl">
+          <div className="justify-center text-center">
+            <span className="text-lg font-normal leading-7 text-secondary">
+              Nasz prosty, trzystopniowy proces sprawia, że zrozumienie składu
+              Twojego jedzenia i karmy dla pupila staje się wyjątkowo łatwe.
+            </span>
+          </div>
+        </div>
+        <div className="justify-start w-full gap-4 flexitems-center">
+          <div className="inline-flex items-center justify-between w-full gap-4 mt-4">
+            <div className="inline-flex flex-col items-center self-stretch justify-start w-full gap-4 p-8 bg-white rounded-4xl">
+              <Icon className="bg-orange/25 aspect-square">
+                <span className="text-xl font-bold text-secondary/75">1</span>
+              </Icon>
+              <div className="flex flex-col items-start self-stretch justify-start gap-2">
+                <div className="flex flex-col items-center self-stretch justify-start">
+                  <div className="justify-center text-lg font-bold text-center text-zinc-700">
+                    Wybierz i wprowadź
                   </div>
                 </div>
-                <div className="inline-flex flex-col items-start justify-start">
-                  <div className="flex flex-col items-start self-stretch justify-start">
-                    <div className="justify-center text-base font-bold leading-normal text-primary">
-                      Niezawodne i szybkie
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-start justify-start">
-                    <div className="self-stretch justify-center text-sm font-normal leading-tight text-secondary">
-                      Dokładne wyniki w zaledwie kilka minut.
-                    </div>
+                <div className="flex flex-col items-center self-stretch justify-start">
+                  <div className="self-stretch justify-center text-sm font-normal text-center text-stone-500 ">
+                    Wybierz typ analizy i wpisz składniki z etykiety produktu.
                   </div>
                 </div>
               </div>
-              <div className="flex items-center justify-start h-16 gap-4 pr-14">
-                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-orange/20">
-                  <div data-variant="2" className="relative w-6 h-6">
-                    <div className="w-5 h-5 left-[2.25px] top-[2.25px] absolute bg-orange" />
+            </div>
+            <div className="inline-flex flex-col items-center self-stretch justify-start w-full gap-4 p-8 bg-white rounded-4xl">
+              <Icon className="bg-orange/25 aspect-square">
+                <span className="text-xl font-bold text-secondary/75">2</span>
+              </Icon>
+              <div className="flex flex-col items-start self-stretch justify-start gap-2">
+                <div className="flex flex-col items-center self-stretch justify-start">
+                  <div className="justify-center text-lg font-bold text-center text-zinc-700">
+                    Otrzymaj analizę
                   </div>
                 </div>
-                <div className="inline-flex flex-col items-start justify-start">
-                  <div className="flex flex-col items-start self-stretch justify-start">
-                    <div className="justify-center text-base font-bold leading-normal text-primary">
-                      Oszczędza Twój czas
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-start justify-start">
-                    <div className="self-stretch justify-center text-sm font-normal leading-tight text-secondary">
-                      Wszystkie informacje w jednym miejscu.
-                    </div>
+                <div className="flex flex-col items-center self-stretch justify-start">
+                  <div className="self-stretch justify-center text-sm font-normal text-center text-stone-500 ">
+                    Otrzymaj szczegółowy raport o wartości odżywczej,
+                    korzyściach i potencjalnych ryzykach.
                   </div>
                 </div>
               </div>
-              <div className="flex items-center justify-start h-16 gap-4 pr-9">
-                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-orange/20">
-                  <div data-variant="3" className="relative w-6 h-6">
-                    <div className="w-6 h-4 left-[0.75px] top-[4.50px] absolute bg-orange" />
+            </div>
+            <div className="inline-flex flex-col items-center self-stretch justify-start w-full gap-4 p-8 bg-white rounded-4xl">
+              <Icon className="bg-orange/25 aspect-square">
+                <span className="text-xl font-bold text-secondary/75">3</span>
+              </Icon>
+              <div className="flex flex-col items-start self-stretch justify-start gap-2">
+                <div className="flex flex-col items-center self-stretch justify-start">
+                  <div className="justify-center text-lg font-bold text-center text-zinc-700">
+                    Podejmuj świadome decyzje
                   </div>
                 </div>
-                <div className="inline-flex flex-col items-start justify-start">
-                  <div className="flex flex-col items-start self-stretch justify-start">
-                    <div className="justify-center text-base font-bold leading-normal text-primary">
-                      Dla ludzi i zwierząt
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-start justify-start">
-                    <div className="self-stretch justify-center text-sm font-normal leading-tight text-secondary">
-                      Pełna analiza bez ograniczeń.
-                    </div>
+                <div className="flex flex-col items-center self-stretch justify-start">
+                  <div className="self-stretch justify-center text-sm font-normal text-center text-stone-500 ">
+                    Zadbaj o zdrowie swoje i swojego pupila dzięki analizie
+                    opartej na danych.
                   </div>
                 </div>
               </div>
