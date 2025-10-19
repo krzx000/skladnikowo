@@ -33,10 +33,10 @@ export const Navbar = () => {
           <div className="flex items-center justify-start gap-8">
             <ul className="flex items-center justify-start gap-8">
               <li>
-                <NavItem href="/analiza" label="Analiza" />
+                <NavItem href="/" label="Analiza" />
               </li>
               <li>
-                <NavItem href="/dzialanie" label="Jak to działa" />
+                <NavItem href="/jak-to-dziala" label="Jak to działa" />
               </li>
               <li>
                 <NavItem href="/faq" label="FAQ" />

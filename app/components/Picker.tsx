@@ -1,54 +1,63 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { motion } from "framer-motion";
 
 export const Picker = ({
   items,
   onSelect,
   selectedValue,
+  name = "picker",
 }: {
   items: { value: string; label: string }[];
   selectedValue: string;
   onSelect?: (value: string) => void;
+  name?: string;
 }) => {
-  const blobRef = useRef<HTMLSpanElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [blobPosition, setBlobPosition] = useState({
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+  });
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const updateBlobPosition = useCallback((label: HTMLLabelElement) => {
+    const parentRect = label.parentElement?.getBoundingClientRect();
+    if (!parentRect) return;
+
+    const labelRect = label.getBoundingClientRect();
+    setBlobPosition({
+      x: labelRect.left - parentRect.left - 4,
+      y: labelRect.top - parentRect.top - 4,
+      width: labelRect.width,
+      height: labelRect.height,
+    });
+
+    setIsAnimating(true);
+    setTimeout(() => setIsAnimating(false), 200);
+  }, []);
 
   useEffect(() => {
-    const initializeBlob = () => {
-      const container = containerRef.current;
-      const blob = blobRef.current;
-      if (!container || !blob) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-      const activeButton = container.querySelector(
-        `button[data-value="${selectedValue}"]`
-      ) as HTMLButtonElement;
+    const activeLabel = container.querySelector(
+      `label[data-value="${selectedValue}"]`
+    ) as HTMLLabelElement;
 
-      if (activeButton) {
-        const buttonRect = activeButton.getBoundingClientRect();
-        const parentRect = container.getBoundingClientRect();
-        blob.style.width = `${buttonRect.width}px`;
-        blob.style.height = `${buttonRect.height}px`;
-        blob.style.transform = `translate(${
-          buttonRect.left - parentRect.left - 4
-        }px, ${buttonRect.top - parentRect.top - 4}px)`;
-      }
-    };
+    if (activeLabel) {
+      updateBlobPosition(activeLabel);
+    }
+  }, [selectedValue, updateBlobPosition]);
 
-    initializeBlob();
-  }, [selectedValue]);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.currentTarget.value;
+    onSelect?.(value);
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    onSelect?.(e.currentTarget.getAttribute("data-value")!);
-    const button = e.currentTarget;
-    const blob = blobRef.current;
-    if (blob) {
-      const buttonRect = button.getBoundingClientRect();
-      const parentRect = button.parentElement!.getBoundingClientRect();
-      blob.style.width = `${buttonRect.width}px`;
-      blob.style.height = `${buttonRect.height}px`;
-      blob.style.transform = `translate(${
-        buttonRect.left - parentRect.left - 4
-      }px, ${buttonRect.top - parentRect.top - 4}px)`;
+    const label = e.currentTarget.parentElement as HTMLLabelElement;
+    if (label) {
+      updateBlobPosition(label);
     }
   };
 
@@ -57,22 +66,41 @@ export const Picker = ({
       ref={containerRef}
       className="relative flex p-1 rounded-full bg-orange/20 backdrop-blur-md"
     >
-      <span
-        ref={blobRef}
-        className="absolute z-0 transition-all bg-white rounded-full"
+      <motion.span
+        className="absolute z-0 bg-white rounded-full"
+        animate={{
+          x: blobPosition.x,
+          y: blobPosition.y,
+          width: blobPosition.width,
+          height: blobPosition.height,
+          scale: isAnimating ? 1.1 : 1,
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 400,
+          damping: 30,
+          scale: { duration: 0.2 },
+        }}
       />
 
       {items.map((item) => (
-        <button
-          onClick={handleClick}
+        <label
           key={item.value}
           data-value={item.value}
           className={`z-10 px-6 py-2 text-sm rounded-full cursor-pointer font-semibold transition-all ${
             selectedValue === item.value ? "text-primary" : "text-secondary"
           }`}
         >
-          {item.label}
-        </button>
+          <input
+            type="radio"
+            name={name}
+            value={item.value}
+            checked={selectedValue === item.value}
+            onChange={handleChange}
+            className="sr-only"
+          />
+          <span>{item.label}</span>
+        </label>
       ))}
     </div>
   );
