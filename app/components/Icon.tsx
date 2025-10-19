@@ -12,7 +12,7 @@ export const Icon: React.FC<IconProps> = ({
   type = "span",
 }) => {
   const combinedClassName =
-    `p-2 transition-all rounded-full hover:scale-105 active:scale-95 inline-flex items-center justify-center ${
+    `p-2 transition-all rounded-full hover:scale-[1.025] active:scale-y-[0.95] active:scale-x-[1.1] inline-flex items-center justify-center ${
       onClick ? "cursor-pointer" : ""
     } ${className}`.trim();
 
