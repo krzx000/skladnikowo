@@ -59,7 +59,7 @@ export const AnalyzeInput = () => {
         />
 
         <Button onClick={handleClick} disabled={!value.trim()} icon>
-          <Sparkles size={"1.25rem"} /> Analizuj składniki
+          <Sparkles size={20} /> Analizuj składniki
         </Button>
       </div>
     </div>
