@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Picker } from "./components/Picker";
+import { AnalyzeInput } from "./components/AnalyzeInput";
 
 export default function Home() {
   const [selectedValue, setSelectedValue] = useState("humans");
@@ -8,12 +9,12 @@ export default function Home() {
   return (
     <div className="w-full">
       <section className="inline-flex flex-col items-center self-stretch justify-start gap-4">
-        <div className="flex flex-col items-center justify-start w-full max-w-3xl">
+        <div className="flex flex-col items-center justify-start w-full max-w-2xl">
           <div className="self-stretch text-center justify-center text-primary text-6xl font-extrabold  leading-[60px]">
             Wiesz, co jesz.
           </div>
         </div>
-        <div className="flex flex-col items-center justify-start w-full max-w-3xl">
+        <div className="flex flex-col items-center justify-start w-full max-w-2xl">
           <div className="self-stretch justify-center text-center">
             <span className="text-lg font-normal leading-7 text-secondary">
               Uzyskaj{" "}
@@ -39,22 +40,8 @@ export default function Home() {
               ]}
             />
           </div>
-          <div className="w-full max-w-[700px] relative flex flex-col justify-start items-start">
-            <div className="self-stretch h-16 pl-6 pr-40 py-5 bg-white rounded-[36px] shadow-[0px_0px_12px_0px_rgba(249,192,154,0.10)] inline-flex justify-center items-start overflow-hidden">
-              <div className="w-[488px] inline-flex flex-col justify-start items-start overflow-hidden">
-                <div className="justify-center text-base font-normal text-secondary ">
-                  Wklej tutaj składniki…
-                </div>
-              </div>
-            </div>
-            <div
-              data-variant="1"
-              className="h-12 px-6 py-3.5 left-[525.52px] top-[8px] absolute bg-orange rounded-[32px] inline-flex justify-center items-center"
-            >
-              <div className="justify-center text-sm font-bold leading-tight text-center text-white">
-                Analizuj składniki
-              </div>
-            </div>
+          <div className="w-full max-w-2xl">
+            <AnalyzeInput />
           </div>
           <div className="flex flex-col items-start self-stretch justify-start pt-4">
             <div className="inline-flex items-center self-stretch justify-between">

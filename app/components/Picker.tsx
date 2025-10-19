@@ -55,7 +55,7 @@ export const Picker = ({
   return (
     <div
       ref={containerRef}
-      className="relative flex p-1 rounded-full bg-orange/20 backdrop-blur-lg"
+      className="relative flex p-1 rounded-full bg-orange/20 backdrop-blur-md"
     >
       <span
         ref={blobRef}
