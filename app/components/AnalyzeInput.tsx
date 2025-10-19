@@ -1,6 +1,8 @@
 "use client";
 import { useRef, useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { Button } from "./Button";
+import { Sparkles } from "lucide-react";
+
 export const AnalyzeInput = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isMultiline, setIsMultiline] = useState(false);
@@ -30,8 +32,6 @@ export const AnalyzeInput = () => {
 
   const textareaBaseClasses =
     "pl-4 py-2 outline-none resize-none overflow-hidden rounded-3xl text-base leading-6 min-h-[24px]";
-  const buttonClasses =
-    "px-6 py-3.5 text-white cursor-pointer rounded-full bg-orange font-bold text-sm whitespace-nowrap disabled:bg-orange/75 transition-all";
 
   const handleClick = () => {
     if (!value.trim()) return;
@@ -54,24 +54,13 @@ export const AnalyzeInput = () => {
           className={`${textareaBaseClasses} ${
             isMultiline ? "w-full px-4" : "flex-1"
           }`}
-          placeholder="Wklej składniki..."
+          placeholder="Wklej składniki... \"
           rows={1}
         />
 
-        <motion.button
-          onClick={handleClick}
-          disabled={!value.trim()}
-          className={buttonClasses}
-          whileHover={{ scale: !value.trim() ? 1 : 1.05 }}
-          transition={{
-            type: "spring",
-            stiffness: 400,
-            damping: 30,
-            scale: { duration: 0.2 },
-          }}
-        >
-          Analizuj składniki
-        </motion.button>
+        <Button onClick={handleClick} disabled={!value.trim()} icon>
+          <Sparkles size={"1.25rem"} /> Analizuj składniki
+        </Button>
       </div>
     </div>
   );
