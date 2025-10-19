@@ -1,22 +1,30 @@
 interface IconProps {
   children: React.ReactNode;
-  backgroundColor?: string;
+  className?: string;
   onClick?: () => void;
+  type?: "span" | "button";
 }
 
 export const Icon: React.FC<IconProps> = ({
   children,
-  backgroundColor = "transparent",
+  className = "",
   onClick,
+  type = "span",
 }) => {
+  const combinedClassName = `inline-flex items-center justify-center ${
+    onClick ? "cursor-pointer" : ""
+  } ${className}`.trim();
+
+  if (type === "button") {
+    return (
+      <button type="button" className={combinedClassName} onClick={onClick}>
+        {children}
+      </button>
+    );
+  }
+
   return (
-    <span
-      className={`inline-flex items-center justify-center ${
-        onClick ? "cursor-pointer" : ""
-      }`}
-      style={{ backgroundColor }}
-      onClick={onClick}
-    >
+    <span className={combinedClassName} onClick={onClick}>
       {children}
     </span>
   );
