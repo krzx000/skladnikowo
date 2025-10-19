@@ -3,6 +3,7 @@ interface IconProps {
   className?: string;
   onClick?: () => void;
   type?: "span" | "button";
+  size?: "small" | "large";
   ariaLabel?: string;
 }
 
@@ -11,12 +12,14 @@ export const Icon: React.FC<IconProps> = ({
   className = "",
   onClick,
   type = "span",
+  size = "small",
   ariaLabel,
 }) => {
-  const baseClassName =
-    `p-2 inline-flex items-center justify-center rounded-full transition-all hover:scale-[1.05] active:scale-x-[1.1] active:scale-y-[0.95] ${
-      onClick ? "cursor-pointer" : ""
-    } ${className}`.trim();
+  const baseClassName = `${
+    size === "small" ? "p-2" : "p-3"
+  } inline-flex items-center justify-center rounded-full transition hover:scale-[1.05] active:scale-x-[1.1] active:scale-y-[0.95] ${
+    onClick ? "cursor-pointer" : ""
+  } ${className}`.trim();
 
   if (type === "button") {
     return (

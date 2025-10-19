@@ -11,7 +11,10 @@ const Step = ({
 }) => (
   <article className="flex flex-col items-center self-stretch w-full gap-4 p-8 bg-white rounded-4xl">
     <Icon className="bg-orange/25 aspect-square" ariaLabel={`Krok ${number}`}>
-      <span className="text-xl font-bold text-secondary/75" aria-hidden="true">
+      <span
+        className="flex items-center justify-center w-6 h-6 text-xl font-semibold aspect-square text-secondary/75"
+        aria-hidden="true"
+      >
         {number}
       </span>
     </Icon>
@@ -67,7 +70,7 @@ export const HowItWorksSection = () => {
       </div>
 
       {/* Kroki procesu */}
-      <div className="flex items-stretch justify-between w-full gap-4 mt-4">
+      <div className="flex items-stretch justify-between w-full gap-4 mt-4 max-md:flex-col">
         {steps.map((step) => (
           <Step
             key={step.number}

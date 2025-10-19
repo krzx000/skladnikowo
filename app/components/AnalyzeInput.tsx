@@ -57,7 +57,7 @@ export const AnalyzeInput = () => {
         className={
           isMultiline
             ? "flex flex-col gap-1 items-end"
-            : "flex items-center gap-4"
+            : "flex flex-col md:flex-row items-end md:items-center gap-3 md:gap-4"
         }
       >
         <label htmlFor="ingredients-input" className="sr-only">
@@ -70,7 +70,7 @@ export const AnalyzeInput = () => {
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
           className={`pl-4 py-2 outline-none resize-none overflow-hidden rounded-4xl text-base min-h-[24px] ${
-            isMultiline ? "w-full px-4" : "flex-1"
+            isMultiline ? "w-full px-4" : "w-full md:flex-1"
           }`}
           placeholder="Wpisz tutaj składniki produktu..."
           rows={1}

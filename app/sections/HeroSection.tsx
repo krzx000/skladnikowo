@@ -88,7 +88,7 @@ export const HeroSection = () => {
 
         {/* Funkcje */}
         <div
-          className="flex items-center justify-between w-full gap-4 mt-4"
+          className="flex items-center justify-between w-full gap-4 mt-4 max-md:flex-wrap max-md:justify-center max-sm:justify-start"
           role="list"
         >
           {features.map((feature) => (

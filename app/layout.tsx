@@ -112,8 +112,8 @@ export default function RootLayout({
     <html lang="pl">
       <body className={`${manrope.variable}  antialiased`}>
         <Navbar />
-        <main className="flex justify-center w-full">
-          <div className="flex flex-col justify-center w-full max-w-5xl gap-32 py-24 pt-40">
+        <main className="flex justify-center w-full ">
+          <div className="flex flex-col justify-center w-full max-w-5xl gap-32 px-4 py-24 pt-40">
             {children}
           </div>
         </main>

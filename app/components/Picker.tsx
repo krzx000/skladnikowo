@@ -21,6 +21,7 @@ export const Picker = ({
     height: 0,
   });
   const [isAnimating, setIsAnimating] = useState(false);
+  const [enableTransition, setEnableTransition] = useState(false);
 
   const updateBlobPosition = useCallback((label: HTMLLabelElement) => {
     const parentRect = label.parentElement?.getBoundingClientRect();
@@ -49,6 +50,13 @@ export const Picker = ({
     if (activeLabel) {
       updateBlobPosition(activeLabel);
     }
+
+    // Włącz transition po krótkim opóźnieniu
+    const timer = setTimeout(() => {
+      setEnableTransition(true);
+    }, 50);
+
+    return () => clearTimeout(timer);
   }, [selectedValue, updateBlobPosition]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,11 +86,17 @@ export const Picker = ({
           height: blobPosition.height,
           scale: isAnimating ? 1.1 : 1,
         }}
-        transition={{
-          type: "spring",
-          stiffness: 400,
-          damping: 30,
-        }}
+        transition={
+          enableTransition
+            ? {
+                type: "spring",
+                stiffness: 400,
+                damping: 30,
+              }
+            : {
+                duration: 0,
+              }
+        }
         aria-hidden="true"
       />
 
@@ -93,7 +107,7 @@ export const Picker = ({
           <label
             key={item.value}
             data-value={item.value}
-            className={`relative z-10 px-6 py-2 text-sm rounded-full cursor-pointer font-semibold transition-colors ${
+            className={`relative z-10 px-6 py-2 text-sm rounded-full cursor-pointer text-center font-semibold transition-colors ${
               isSelected ? "text-primary" : "text-secondary"
             }`}
           >

@@ -23,8 +23,8 @@ export const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="flex flex-col items-center w-full px-6 py-8 border-t bg-orange/10 border-orange/20 backdrop-blur-sm">
-      <div className="flex flex-col items-center w-full max-w-5xl gap-4">
+    <footer className="flex flex-col items-center w-full px-4 py-6 border-t sm:px-6 sm:py-8 bg-orange/10 border-orange/20 backdrop-blur-sm">
+      <div className="flex flex-col items-center w-full max-w-5xl gap-4 sm:gap-6">
         {/* Logo i nazwa */}
         <div className="flex flex-col items-center gap-2">
           <Link href="/" aria-label="Strona główna Składnikowo">
@@ -33,18 +33,17 @@ export const Footer = () => {
               alt="Logo Składnikowo"
               width={80}
               height={64}
-              className="grayscale-100"
+              className="w-16 h-auto grayscale-100 sm:w-20"
             />
           </Link>
-          <p className="text-sm text-center text-primary">Składnikowo</p>
         </div>
 
         {/* Copyright i nawigacja */}
         <nav
-          className="flex items-center self-stretch justify-between"
+          className="flex flex-col items-center self-stretch gap-4 md:flex-row md:justify-between"
           aria-label="Stopka"
         >
-          <p className="text-sm text-secondary">
+          <p className="text-xs text-center sm:text-sm text-secondary sm:text-left">
             © {currentYear} Składnikowo. Wszelkie prawa zastrzeżone.
           </p>
           <ul className="flex items-center gap-4">
