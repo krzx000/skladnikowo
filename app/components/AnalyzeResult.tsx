@@ -81,7 +81,9 @@ const DataRow = ({
   unit?: string;
 }) => (
   <div className="flex justify-between items-center py-2.5 border-b border-orange/10 last:border-0 rounded px-2 -mx-2">
-    <span className="text-sm text-secondary font-medium">{label}</span>
+    <span className="text-sm text-secondary font-medium capitalize">
+      {label}
+    </span>
     <span className="text-sm font-bold text-primary flex items-center gap-1">
       {value}
       {unit && <span className="text-secondary ml-1 font-normal">{unit}</span>}
@@ -120,15 +122,61 @@ const Badge = ({
 };
 
 export const AnalyzeResult = ({ result }: { result: AnalysisResultData }) => {
+  // Obsługa błędów - brak danych
+  if (!result) {
+    return (
+      <Card className="bg-red-50 border-red-200">
+        <div className="flex items-center gap-3 text-red-600">
+          <AlertCircle className="w-6 h-6" />
+          <div>
+            <h3 className="font-bold text-lg">Brak danych</h3>
+            <p className="text-sm text-red-600/80">
+              Nie udało się załadować wyników analizy.
+            </p>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
+  // Walidacja podstawowych danych
+  if (!result.nazwa) {
+    return (
+      <Card className="bg-yellow-50 border-yellow-200">
+        <div className="flex items-center gap-3 text-yellow-600">
+          <AlertTriangle className="w-6 h-6" />
+          <div>
+            <h3 className="font-bold text-lg">Niekompletne dane</h3>
+            <p className="text-sm text-yellow-600/80">
+              Wyniki analizy są niekompletne. Brakuje podstawowych informacji o
+              produkcie.
+            </p>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
   // Funkcja do mapowania oceny na kolor
   const getQualityColor = (
     quality: string | null
   ): "success" | "warning" | "error" | "default" => {
     if (!quality) return "default";
     const q = quality.toLowerCase();
-    if (q.includes("bardzo dobra") || q.includes("wybitna")) return "success";
-    if (q.includes("dobra") || q.includes("prawidłowy")) return "success";
-    if (q.includes("średnia") || q.includes("częściowe")) return "warning";
+    if (
+      q.includes("bardzo dobra") ||
+      q.includes("wybitna") ||
+      q.includes("bardzo dobry")
+    )
+      return "success";
+    if (q.includes("dobra") || q.includes("prawidłowy") || q.includes("dobry"))
+      return "success";
+    if (
+      q.includes("średnia") ||
+      q.includes("częściowe") ||
+      q.includes("średni")
+    )
+      return "warning";
     return "error";
   };
 
@@ -371,21 +419,30 @@ export const AnalyzeResult = ({ result }: { result: AnalysisResultData }) => {
           <SectionTitle icon={Droplets}>Minerały</SectionTitle>
           <div className="space-y-1">
             {result.mineralne && result.mineralne.length > 0 ? (
-              result.mineralne.map((item, idx) => (
-                <DataRow
-                  key={idx}
-                  label={item.name}
-                  value={
-                    item.value ?? (
-                      <span className="flex items-center gap-1 text-secondary/75">
-                        <AlertCircle className="w-3 h-3" />
-                        Brak danych
-                      </span>
-                    )
-                  }
-                  unit={item.value !== null ? "%" : undefined}
-                />
-              ))
+              [...result.mineralne]
+                .sort((a, b) => {
+                  // Brak danych na końcu
+                  if (a.value === null && b.value !== null) return 1;
+                  if (a.value !== null && b.value === null) return -1;
+                  if (a.value === null && b.value === null) return 0;
+                  // Sortowanie malejąco
+                  return (b.value ?? 0) - (a.value ?? 0);
+                })
+                .map((item, idx) => (
+                  <DataRow
+                    key={idx}
+                    label={item.name}
+                    value={
+                      item.value ?? (
+                        <span className="flex items-center gap-1 text-secondary/75">
+                          <AlertCircle className="w-3 h-3" />
+                          Brak danych
+                        </span>
+                      )
+                    }
+                    unit={item.value !== null ? "%" : undefined}
+                  />
+                ))
             ) : (
               <div className="text-sm text-secondary/75 text-center py-4">
                 <AlertCircle className="w-4 h-4 mx-auto mb-2" />
