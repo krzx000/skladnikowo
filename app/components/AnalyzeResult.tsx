@@ -453,33 +453,64 @@ export const AnalyzeResult = ({ result }: { result: AnalysisResultData }) => {
         </Card>
 
         {/* Energia */}
-        <Card className="flex-1 min-w-[280px]">
+        <Card className="flex-1 min-w-[280px] bg-gradient-to-br from-orange/5 to-white">
           <SectionTitle icon={Flame}>Energia</SectionTitle>
-          <div className="space-y-1">
-            <DataRow
-              label="Kalorie"
-              value={
-                result.energia?.kcal_na_100g ?? (
-                  <span className="flex items-center gap-1 text-secondary/75">
-                    <AlertCircle className="w-3 h-3" />
-                    Brak danych
-                  </span>
-                )
-              }
-              unit={result.energia?.kcal_na_100g ? "kcal/100g" : undefined}
-            />
-            <DataRow
-              label="Energia"
-              value={
-                result.energia?.kJ_na_100g ?? (
-                  <span className="flex items-center gap-1 text-secondary/75">
-                    <AlertCircle className="w-3 h-3" />
-                    Brak danych
-                  </span>
-                )
-              }
-              unit={result.energia?.kJ_na_100g ? "kJ/100g" : undefined}
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Kalorie */}
+            <div className="p-4 bg-gradient-to-br from-orange/10 to-orange/5 rounded-xl border border-orange/20">
+              <div className="flex flex-col items-center text-center gap-2">
+                <IconComponent className="bg-orange/30">
+                  <Flame className="w-5 h-5 text-secondary/65" />
+                </IconComponent>
+                <div>
+                  <p className="text-xs text-secondary font-medium mb-1">
+                    Kalorie
+                  </p>
+                  {result.energia?.kcal_na_100g !== null &&
+                  result.energia?.kcal_na_100g !== undefined ? (
+                    <p className="text-2xl font-bold text-orange">
+                      {result.energia.kcal_na_100g}
+                      <span className="text-sm text-secondary ml-1 font-normal">
+                        kcal/100g
+                      </span>
+                    </p>
+                  ) : (
+                    <span className="flex items-center justify-center gap-1 text-secondary/75 text-sm">
+                      <AlertCircle className="w-4 h-4" />
+                      Brak danych
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Energia (kJ) */}
+            <div className="p-4 bg-gradient-to-br from-red-50 to-red-25 rounded-xl border border-red-200/50">
+              <div className="flex flex-col items-center text-center gap-2">
+                <IconComponent className="bg-red-500/20">
+                  <Flame className="w-5 h-5 text-red-600" />
+                </IconComponent>
+                <div>
+                  <p className="text-xs text-secondary font-medium mb-1">
+                    Energia
+                  </p>
+                  {result.energia?.kJ_na_100g !== null &&
+                  result.energia?.kJ_na_100g !== undefined ? (
+                    <p className="text-2xl font-bold text-red-600">
+                      {result.energia.kJ_na_100g}
+                      <span className="text-sm text-secondary ml-1 font-normal">
+                        kJ/100g
+                      </span>
+                    </p>
+                  ) : (
+                    <span className="flex items-center justify-center gap-1 text-secondary/75 text-sm">
+                      <AlertCircle className="w-4 h-4" />
+                      Brak danych
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </Card>
 
@@ -495,88 +526,152 @@ export const AnalyzeResult = ({ result }: { result: AnalysisResultData }) => {
             (result.dodatki_dietetyczne.inne_dodatki_funkcjonalne &&
               result.dodatki_dietetyczne.inne_dodatki_funkcjonalne.length >
                 0)) && (
-            <Card className="flex-1 min-w-[280px] basis-full">
+            <Card className="flex-1 min-w-[280px] basis-full bg-gradient-to-br from-orange/5 to-white">
               <SectionTitle icon={Pill}>Dodatki dietetyczne</SectionTitle>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Lewa kolumna - Tauryna i Witaminy */}
+                <div className="space-y-4">
+                  {/* Tauryna - wyróżniona */}
                   {result.dodatki_dietetyczne.tauryna_mg_kg !== null && (
-                    <DataRow
-                      label="Tauryna"
-                      value={result.dodatki_dietetyczne.tauryna_mg_kg}
-                      unit="mg/kg"
-                    />
+                    <div className="p-4 bg-gradient-to-br from-orange/10 to-orange/5 rounded-xl border border-orange/20">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <IconComponent className="bg-orange/20">
+                            <Pill className="w-4 h-4 text-secondary/75" />
+                          </IconComponent>
+                          <span className="text-sm font-bold text-primary">
+                            Tauryna
+                          </span>
+                        </div>
+                        <span className="text-lg font-bold text-orange">
+                          {result.dodatki_dietetyczne.tauryna_mg_kg}
+                          <span className="text-sm text-secondary ml-1 font-normal">
+                            mg/kg
+                          </span>
+                        </span>
+                      </div>
+                    </div>
                   )}
+
+                  {/* Witaminy */}
                   {result.dodatki_dietetyczne.witaminy &&
                     result.dodatki_dietetyczne.witaminy.length > 0 && (
-                      <>
-                        <div className="text-sm font-semibold text-secondary mt-3 mb-1">
-                          Witaminy:
-                        </div>
-                        {result.dodatki_dietetyczne.witaminy.map(
-                          (vitamin, idx) => (
-                            <DataRow
-                              key={idx}
-                              label={vitamin.name}
-                              value={
-                                vitamin.value ?? (
-                                  <span className="flex items-center gap-1 text-secondary/75">
+                      <div className="p-4 bg-white rounded-xl border border-orange/30">
+                        <h4 className="text-sm font-bold text-primary mb-3 flex items-center gap-2">
+                          <IconComponent className="bg-green-500/20">
+                            <Sparkles className="w-4 h-4 text-green-600" />
+                          </IconComponent>
+                          Witaminy
+                        </h4>
+                        <div className="space-y-2">
+                          {result.dodatki_dietetyczne.witaminy.map(
+                            (vitamin, idx) => (
+                              <div
+                                key={idx}
+                                className="flex justify-between items-center py-1.5 text-sm"
+                              >
+                                <span className="text-secondary font-medium capitalize">
+                                  {vitamin.name}
+                                </span>
+                                {vitamin.value !== null ? (
+                                  <span className="font-semibold text-primary">
+                                    {vitamin.value}
+                                    <span className="text-xs text-secondary ml-1">
+                                      IU
+                                    </span>
+                                  </span>
+                                ) : (
+                                  <span className="flex items-center gap-1 text-secondary/75 text-xs">
                                     <AlertCircle className="w-3 h-3" />
                                     Brak danych
                                   </span>
-                                )
-                              }
-                              unit={vitamin.value !== null ? "IU" : undefined}
-                            />
-                          )
-                        )}
-                      </>
-                    )}
-                </div>
-                <div className="space-y-3">
-                  {result.dodatki_dietetyczne.oleje &&
-                    result.dodatki_dietetyczne.oleje.length > 0 && (
-                      <div>
-                        <p className="text-sm font-semibold text-secondary mb-2">
-                          Oleje:
-                        </p>
-                        <div className="flex flex-wrap gap-1.5">
-                          {result.dodatki_dietetyczne.oleje.map((oil, idx) => (
-                            <Badge key={idx} variant="default">
-                              {oil.name}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  {result.dodatki_dietetyczne.mikroelementy &&
-                    result.dodatki_dietetyczne.mikroelementy.length > 0 && (
-                      <div>
-                        <p className="text-sm font-semibold text-secondary mb-2">
-                          Mikroelementy:
-                        </p>
-                        <div className="text-sm text-primary space-y-1">
-                          {result.dodatki_dietetyczne.mikroelementy.map(
-                            (elem, idx) => (
-                              <div key={idx}>
-                                • {elem.name}
-                                {elem.value !== null ? ` (${elem.value})` : ""}
+                                )}
                               </div>
                             )
                           )}
                         </div>
                       </div>
                     )}
+                </div>
+
+                {/* Prawa kolumna - Oleje, Mikroelementy, Dodatki funkcjonalne */}
+                <div className="space-y-4">
+                  {/* Oleje */}
+                  {result.dodatki_dietetyczne.oleje &&
+                    result.dodatki_dietetyczne.oleje.length > 0 && (
+                      <div className="p-4 bg-white rounded-xl border border-orange/40">
+                        <h4 className="text-sm font-bold text-primary mb-3 flex items-center gap-2">
+                          <IconComponent className="bg-yellow-500/20">
+                            <Droplets className="w-4 h-4 text-yellow-600" />
+                          </IconComponent>
+                          Oleje
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          {result.dodatki_dietetyczne.oleje.map((oil, idx) => (
+                            <Badge
+                              key={idx}
+                              variant="default"
+                              className="text-xs"
+                            >
+                              {oil.name}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                  {/* Mikroelementy */}
+                  {result.dodatki_dietetyczne.mikroelementy &&
+                    result.dodatki_dietetyczne.mikroelementy.length > 0 && (
+                      <div className="p-4 bg-white rounded-xl border border-orange/40">
+                        <h4 className="text-sm font-bold text-primary mb-3 flex items-center gap-2">
+                          <IconComponent className="bg-blue-500/20">
+                            <TestTube className="w-4 h-4 text-blue-600" />
+                          </IconComponent>
+                          Mikroelementy
+                        </h4>
+                        <div className="space-y-2">
+                          {result.dodatki_dietetyczne.mikroelementy.map(
+                            (elem, idx) => (
+                              <div
+                                key={idx}
+                                className="flex items-start gap-2 text-sm"
+                              >
+                                <span className="text-orange mt-0.5">•</span>
+                                <span className="text-primary flex-1">
+                                  {elem.name}
+                                  {elem.value !== null && (
+                                    <span className="text-secondary/75 ml-1">
+                                      ({elem.value})
+                                    </span>
+                                  )}
+                                </span>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                  {/* Inne dodatki funkcjonalne */}
                   {result.dodatki_dietetyczne.inne_dodatki_funkcjonalne &&
                     result.dodatki_dietetyczne.inne_dodatki_funkcjonalne
                       .length > 0 && (
-                      <div>
-                        <p className="text-sm font-semibold text-secondary mb-2">
-                          Inne dodatki funkcjonalne:
-                        </p>
-                        <div className="flex flex-wrap gap-1.5">
+                      <div className="p-4 bg-white rounded-xl border border-orange/40">
+                        <h4 className="text-sm font-bold text-primary mb-3 flex items-center gap-2">
+                          <IconComponent className="bg-purple-500/20">
+                            <Sparkles className="w-4 h-4 text-purple-600" />
+                          </IconComponent>
+                          Dodatki funkcjonalne
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
                           {result.dodatki_dietetyczne.inne_dodatki_funkcjonalne.map(
                             (item, idx) => (
-                              <Badge key={idx} variant="default">
+                              <Badge
+                                key={idx}
+                                variant="default"
+                                className="text-xs"
+                              >
                                 {item.name}
                               </Badge>
                             )
