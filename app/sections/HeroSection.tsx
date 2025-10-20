@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { Picker } from "../components/Picker";
 import { AnalyzeInput } from "../components/AnalyzeInput";
+import { AnalyzeResult } from "../components/AnalyzeResult";
+import { AnalysisResultData } from "@/lib/types";
 import { Clock3, PawPrint, ShieldCheck } from "lucide-react";
 import { Icon } from "../components/Icon";
 
@@ -15,7 +17,7 @@ const Feature = ({
   description: string;
 }) => (
   <div className="flex items-center gap-4">
-    <Icon className="bg-orange/25 hover:bg-orange/35" ariaLabel={title}>
+    <Icon className="bg-orange/20" ariaLabel={title}>
       <IconComponent className="text-secondary/75" strokeWidth={1.75} />
     </Icon>
     <div className="flex flex-col items-start">
@@ -27,6 +29,7 @@ const Feature = ({
 
 export const HeroSection = () => {
   const [selectedValue, setSelectedValue] = useState("humans");
+  const [result, setResult] = useState<AnalysisResultData | null>(null);
 
   const features = [
     {
@@ -83,9 +86,14 @@ export const HeroSection = () => {
         />
 
         <div className="w-full max-w-2xl">
-          <AnalyzeInput />
+          <AnalyzeInput onResultChange={setResult} />
         </div>
 
+        {result && (
+          <div className="w-full">
+            <AnalyzeResult result={result} />
+          </div>
+        )}
         {/* Funkcje */}
         <div
           className="flex items-center justify-between w-full gap-4 mt-4 max-md:flex-wrap max-md:justify-center max-sm:justify-start"

@@ -17,9 +17,11 @@ export const Icon: React.FC<IconProps> = ({
 }) => {
   const baseClassName = `${
     size === "small" ? "p-2" : "p-3"
-  } inline-flex items-center justify-center rounded-full transition hover:scale-[1.05] active:scale-x-[1.1] active:scale-y-[0.95] ${
-    onClick ? "cursor-pointer" : ""
-  } ${className}`.trim();
+  } inline-flex items-center justify-center rounded-full transition ${
+    type === "button"
+      ? "hover:scale-[1.05] active:scale-x-[1.1] active:scale-y-[0.95]"
+      : ""
+  } ${onClick ? "cursor-pointer" : ""} ${className}`.trim();
 
   if (type === "button") {
     return (
