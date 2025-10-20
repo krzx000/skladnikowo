@@ -485,7 +485,7 @@ export const AnalyzeResult = ({ result }: { result: AnalysisResultData }) => {
             </div>
 
             {/* Energia (kJ) */}
-            <div className="p-4 bg-gradient-to-br from-red-50 to-red-25 rounded-xl border border-red-200/50">
+            <div className="p-4 bg-gradient-to-br from-red-50 to-red-25 rounded-xl border border-red-200/20">
               <div className="flex flex-col items-center text-center gap-2">
                 <IconComponent className="bg-red-500/20">
                   <Flame className="w-5 h-5 text-red-600" />
@@ -556,7 +556,7 @@ export const AnalyzeResult = ({ result }: { result: AnalysisResultData }) => {
                   {/* Witaminy */}
                   {result.dodatki_dietetyczne.witaminy &&
                     result.dodatki_dietetyczne.witaminy.length > 0 && (
-                      <div className="p-4 bg-white rounded-xl border border-orange/30">
+                      <div className="p-4 bg-white rounded-xl border border-orange/20">
                         <h4 className="text-sm font-bold text-primary mb-3 flex items-center gap-2">
                           <IconComponent className="bg-green-500/20">
                             <Sparkles className="w-4 h-4 text-green-600" />
@@ -599,7 +599,7 @@ export const AnalyzeResult = ({ result }: { result: AnalysisResultData }) => {
                   {/* Oleje */}
                   {result.dodatki_dietetyczne.oleje &&
                     result.dodatki_dietetyczne.oleje.length > 0 && (
-                      <div className="p-4 bg-white rounded-xl border border-orange/40">
+                      <div className="p-4 bg-white rounded-xl border border-orange/20">
                         <h4 className="text-sm font-bold text-primary mb-3 flex items-center gap-2">
                           <IconComponent className="bg-yellow-500/20">
                             <Droplets className="w-4 h-4 text-yellow-600" />
@@ -623,7 +623,7 @@ export const AnalyzeResult = ({ result }: { result: AnalysisResultData }) => {
                   {/* Mikroelementy */}
                   {result.dodatki_dietetyczne.mikroelementy &&
                     result.dodatki_dietetyczne.mikroelementy.length > 0 && (
-                      <div className="p-4 bg-white rounded-xl border border-orange/40">
+                      <div className="p-4 bg-white rounded-xl border border-orange/20">
                         <h4 className="text-sm font-bold text-primary mb-3 flex items-center gap-2">
                           <IconComponent className="bg-blue-500/20">
                             <TestTube className="w-4 h-4 text-blue-600" />
@@ -657,7 +657,7 @@ export const AnalyzeResult = ({ result }: { result: AnalysisResultData }) => {
                   {result.dodatki_dietetyczne.inne_dodatki_funkcjonalne &&
                     result.dodatki_dietetyczne.inne_dodatki_funkcjonalne
                       .length > 0 && (
-                      <div className="p-4 bg-white rounded-xl border border-orange/40">
+                      <div className="p-4 bg-white rounded-xl border border-orange/20">
                         <h4 className="text-sm font-bold text-primary mb-3 flex items-center gap-2">
                           <IconComponent className="bg-purple-500/20">
                             <Sparkles className="w-4 h-4 text-purple-600" />
@@ -694,9 +694,9 @@ export const AnalyzeResult = ({ result }: { result: AnalysisResultData }) => {
             result.ocena.bilans_makro) && (
             <Card className="flex-1 min-w-[280px] basis-full">
               <SectionTitle icon={Award}>Ocena jakości</SectionTitle>
-              <div className="flex flex-wrap gap-3 sm:gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {result.ocena.jakosc_miesa && (
-                  <div className="flex-1 min-w-0 flex flex-col items-center gap-2 p-3 rounded-xl border border-gray-100 bg-gray-50/50">
+                  <div className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 bg-gray-50/50">
                     <IconComponent
                       className={
                         getQualityColor(result.ocena.jakosc_miesa) === "success"
@@ -737,7 +737,7 @@ export const AnalyzeResult = ({ result }: { result: AnalysisResultData }) => {
                   </div>
                 )}
                 {result.ocena.zawartosc_bialka && (
-                  <div className="flex-1 min-w-0 flex flex-col items-center gap-2 p-3 rounded-xl border border-gray-100 bg-gray-50/50">
+                  <div className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 bg-gray-50/50">
                     <IconComponent
                       className={
                         getQualityColor(result.ocena.zawartosc_bialka) ===
@@ -779,7 +779,7 @@ export const AnalyzeResult = ({ result }: { result: AnalysisResultData }) => {
                   </div>
                 )}
                 {result.ocena.zawartosc_tluszczu && (
-                  <div className="flex-1 min-w-0 flex flex-col items-center gap-2 p-3 rounded-xl border border-gray-100 bg-gray-50/50">
+                  <div className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 bg-gray-50/50">
                     <IconComponent
                       className={
                         getQualityColor(result.ocena.zawartosc_tluszczu) ===
@@ -821,7 +821,7 @@ export const AnalyzeResult = ({ result }: { result: AnalysisResultData }) => {
                   </div>
                 )}
                 {result.ocena.stosunek_Ca_P && (
-                  <div className="flex-1 min-w-0 flex flex-col items-center gap-2 p-3 rounded-xl border border-gray-100 bg-gray-50/50">
+                  <div className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 bg-gray-50/50">
                     <IconComponent
                       className={
                         getQualityColor(result.ocena.stosunek_Ca_P) ===
@@ -863,7 +863,7 @@ export const AnalyzeResult = ({ result }: { result: AnalysisResultData }) => {
                   </div>
                 )}
                 {result.ocena.uzupelnienie_witamin && (
-                  <div className="flex-1 min-w-0 flex flex-col items-center gap-2 p-3 rounded-xl border border-gray-100 bg-gray-50/50">
+                  <div className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 bg-gray-50/50">
                     <IconComponent
                       className={
                         getQualityColor(result.ocena.uzupelnienie_witamin) ===
@@ -906,7 +906,7 @@ export const AnalyzeResult = ({ result }: { result: AnalysisResultData }) => {
                   </div>
                 )}
                 {result.ocena.bilans_makro && (
-                  <div className="flex-1 min-w-0 flex flex-col items-center gap-2 p-3 rounded-xl border border-gray-100 bg-gray-50/50">
+                  <div className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 bg-gray-50/50">
                     <IconComponent
                       className={
                         getQualityColor(result.ocena.bilans_makro) === "success"
