@@ -98,7 +98,7 @@ const Badge = ({
   className = "",
 }: {
   children: React.ReactNode;
-  variant?: "success" | "warning" | "error" | "default";
+  variant?: "success" | "warning" | "orange" | "error" | "default";
   className?: string;
 }) => {
   const colors = {
@@ -106,6 +106,8 @@ const Badge = ({
       "bg-gradient-to-r from-green-50 to-green-100 text-green-700 border-green-200 ",
     warning:
       "bg-gradient-to-r from-yellow-50 to-yellow-100 text-yellow-700 border-yellow-200 ",
+    orange:
+      "bg-gradient-to-r from-orange-50 to-orange-100 text-orange-700 border-orange-200 ",
     error:
       "bg-gradient-to-r from-red-50 to-red-100 text-red-700 border-red-200 ",
     default:
@@ -160,24 +162,119 @@ export const AnalyzeResult = ({ result }: { result: AnalysisResultData }) => {
   // Funkcja do mapowania oceny na kolor
   const getQualityColor = (
     quality: string | null
-  ): "success" | "warning" | "error" | "default" => {
+  ): "success" | "warning" | "orange" | "error" | "default" => {
     if (!quality) return "default";
     const q = quality.toLowerCase();
+
+    // Zielony - oceny wybitne/bardzo dobre
     if (
-      q.includes("bardzo dobra") ||
       q.includes("wybitna") ||
-      q.includes("bardzo dobry")
+      q.includes("bardzo dobra") ||
+      q.includes("bardzo dobry") ||
+      q.includes("prawidłowy") ||
+      q.includes("pełne")
     )
       return "success";
-    if (q.includes("dobra") || q.includes("prawidłowy") || q.includes("dobry"))
-      return "success";
+
+    // Żółty - oceny dobre (bez "bardzo")
+    if (q.includes("dobra") || q.includes("dobry")) return "warning";
+
+    // Pomarańczowy - oceny średnie
     if (
       q.includes("średnia") ||
+      q.includes("średni") ||
       q.includes("częściowe") ||
-      q.includes("średni")
+      q.includes("brak danych")
     )
-      return "warning";
-    return "error";
+      return "orange";
+
+    // Czerwony - oceny słabe/negatywne
+    if (
+      q.includes("słaba") ||
+      q.includes("słaby") ||
+      q.includes("zaburzony") ||
+      q.includes("zły")
+    )
+      return "error";
+
+    return "default";
+  };
+
+  // Helper function for quality indicator colors
+  const getQualityColorClass = (
+    variant: "success" | "warning" | "orange" | "error" | "default"
+  ) => {
+    const colors = {
+      success: {
+        bg: "bg-green-500/20",
+        icon: "text-green-500/100",
+        IconComponent: CheckCircle,
+      },
+      warning: {
+        bg: "bg-yellow-500/20",
+        icon: "text-yellow-500/100",
+        IconComponent: CheckCircle,
+      },
+      orange: {
+        bg: "bg-orange-500/20",
+        icon: "text-orange-500/100",
+        IconComponent: AlertTriangle,
+      },
+      error: {
+        bg: "bg-red-500/20",
+        icon: "text-red-500/100",
+        IconComponent: XCircle,
+      },
+      default: {
+        bg: "bg-gray-500/20",
+        icon: "text-gray-500/100",
+        IconComponent: AlertCircle,
+      },
+    };
+    return colors[variant];
+  };
+
+  // Component for quality indicator
+  const QualityIndicator = ({
+    quality,
+    label,
+  }: {
+    quality: string;
+    label: string;
+  }) => {
+    const variant = getQualityColor(quality);
+    const colorClass = getQualityColorClass(variant);
+    const Icon = colorClass.IconComponent;
+
+    return (
+      <div className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 bg-gray-50/50">
+        <IconComponent className={colorClass.bg}>
+          <Icon className={`w-5 h-5 ${colorClass.icon}`} strokeWidth={1.75} />
+        </IconComponent>
+        <div className="text-center">
+          <p className="text-xs text-secondary mb-0.5">{label}</p>
+          <p className="text-sm font-semibold text-primary capitalize">
+            {quality}
+          </p>
+        </div>
+      </div>
+    );
+  };
+
+  // Component for "Suitable For" badge
+  const SuitableBadge = ({
+    icon: Icon,
+    label,
+  }: {
+    icon: React.ElementType;
+    label: string;
+  }) => {
+    return (
+      <div className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200">
+        <Icon className="w-4 sm:w-5 h-4 sm:h-5 text-green-600" />
+        <span className="text-sm font-semibold text-green-700">{label}</span>
+      </div>
+    );
   };
 
   return (
@@ -696,255 +793,40 @@ export const AnalyzeResult = ({ result }: { result: AnalysisResultData }) => {
               <SectionTitle icon={Award}>Ocena jakości</SectionTitle>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {result.ocena.jakosc_miesa && (
-                  <div className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 bg-gray-50/50">
-                    <IconComponent
-                      className={
-                        getQualityColor(result.ocena.jakosc_miesa) === "success"
-                          ? "bg-green-500/20"
-                          : getQualityColor(result.ocena.jakosc_miesa) ===
-                            "warning"
-                          ? "bg-yellow-500/20"
-                          : "bg-red-500/20"
-                      }
-                    >
-                      {getQualityColor(result.ocena.jakosc_miesa) ===
-                      "success" ? (
-                        <CheckCircle
-                          className="w-5 h-5 text-green-500/100"
-                          strokeWidth={1.75}
-                        />
-                      ) : getQualityColor(result.ocena.jakosc_miesa) ===
-                        "warning" ? (
-                        <AlertTriangle
-                          className="w-5 h-5 text-yellow-500/100"
-                          strokeWidth={1.75}
-                        />
-                      ) : (
-                        <XCircle
-                          className="w-5 h-5 text-red-500/100"
-                          strokeWidth={1.75}
-                        />
-                      )}
-                    </IconComponent>
-                    <div className="text-center">
-                      <p className="text-xs text-secondary mb-0.5">
-                        Jakość mięsa
-                      </p>
-                      <p className="text-sm font-semibold text-primary capitalize">
-                        {result.ocena.jakosc_miesa}
-                      </p>
-                    </div>
-                  </div>
+                  <QualityIndicator
+                    quality={result.ocena.jakosc_miesa}
+                    label="Jakość mięsa"
+                  />
                 )}
                 {result.ocena.zawartosc_bialka && (
-                  <div className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 bg-gray-50/50">
-                    <IconComponent
-                      className={
-                        getQualityColor(result.ocena.zawartosc_bialka) ===
-                        "success"
-                          ? "bg-green-500/20"
-                          : getQualityColor(result.ocena.zawartosc_bialka) ===
-                            "warning"
-                          ? "bg-yellow-500/20"
-                          : "bg-red-500/20"
-                      }
-                    >
-                      {getQualityColor(result.ocena.zawartosc_bialka) ===
-                      "success" ? (
-                        <CheckCircle
-                          className="w-5 h-5 text-green-500/100"
-                          strokeWidth={1.75}
-                        />
-                      ) : getQualityColor(result.ocena.zawartosc_bialka) ===
-                        "warning" ? (
-                        <AlertTriangle
-                          className="w-5 h-5 text-yellow-500/100"
-                          strokeWidth={1.75}
-                        />
-                      ) : (
-                        <XCircle
-                          className="w-5 h-5 text-red-500/100"
-                          strokeWidth={1.75}
-                        />
-                      )}
-                    </IconComponent>
-                    <div className="text-center">
-                      <p className="text-xs text-secondary mb-0.5">
-                        Zawartość białka
-                      </p>
-                      <p className="text-sm font-semibold text-primary capitalize">
-                        {result.ocena.zawartosc_bialka}
-                      </p>
-                    </div>
-                  </div>
+                  <QualityIndicator
+                    quality={result.ocena.zawartosc_bialka}
+                    label="Zawartość białka"
+                  />
                 )}
                 {result.ocena.zawartosc_tluszczu && (
-                  <div className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 bg-gray-50/50">
-                    <IconComponent
-                      className={
-                        getQualityColor(result.ocena.zawartosc_tluszczu) ===
-                        "success"
-                          ? "bg-green-500/20"
-                          : getQualityColor(result.ocena.zawartosc_tluszczu) ===
-                            "warning"
-                          ? "bg-yellow-500/20"
-                          : "bg-red-500/20"
-                      }
-                    >
-                      {getQualityColor(result.ocena.zawartosc_tluszczu) ===
-                      "success" ? (
-                        <CheckCircle
-                          className="w-5 h-5 text-green-500/100"
-                          strokeWidth={1.75}
-                        />
-                      ) : getQualityColor(result.ocena.zawartosc_tluszczu) ===
-                        "warning" ? (
-                        <AlertTriangle
-                          className="w-5 h-5 text-yellow-500/100"
-                          strokeWidth={1.75}
-                        />
-                      ) : (
-                        <XCircle
-                          className="w-5 h-5 text-red-500/100"
-                          strokeWidth={1.75}
-                        />
-                      )}
-                    </IconComponent>
-                    <div className="text-center">
-                      <p className="text-xs text-secondary mb-0.5">
-                        Zawartość tłuszczu
-                      </p>
-                      <p className="text-sm font-semibold text-primary capitalize">
-                        {result.ocena.zawartosc_tluszczu}
-                      </p>
-                    </div>
-                  </div>
+                  <QualityIndicator
+                    quality={result.ocena.zawartosc_tluszczu}
+                    label="Zawartość tłuszczu"
+                  />
                 )}
                 {result.ocena.stosunek_Ca_P && (
-                  <div className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 bg-gray-50/50">
-                    <IconComponent
-                      className={
-                        getQualityColor(result.ocena.stosunek_Ca_P) ===
-                        "success"
-                          ? "bg-green-500/20"
-                          : getQualityColor(result.ocena.stosunek_Ca_P) ===
-                            "warning"
-                          ? "bg-yellow-500/20"
-                          : "bg-red-500/20"
-                      }
-                    >
-                      {getQualityColor(result.ocena.stosunek_Ca_P) ===
-                      "success" ? (
-                        <CheckCircle
-                          className="w-5 h-5 text-green-500/100"
-                          strokeWidth={1.75}
-                        />
-                      ) : getQualityColor(result.ocena.stosunek_Ca_P) ===
-                        "warning" ? (
-                        <AlertTriangle
-                          className="w-5 h-5 text-yellow-500/100"
-                          strokeWidth={1.75}
-                        />
-                      ) : (
-                        <XCircle
-                          className="w-5 h-5 text-red-500/100"
-                          strokeWidth={1.75}
-                        />
-                      )}
-                    </IconComponent>
-                    <div className="text-center">
-                      <p className="text-xs text-secondary mb-0.5">
-                        Stosunek Ca/P
-                      </p>
-                      <p className="text-sm font-semibold text-primary capitalize">
-                        {result.ocena.stosunek_Ca_P}
-                      </p>
-                    </div>
-                  </div>
+                  <QualityIndicator
+                    quality={result.ocena.stosunek_Ca_P}
+                    label="Stosunek Ca/P"
+                  />
                 )}
                 {result.ocena.uzupelnienie_witamin && (
-                  <div className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 bg-gray-50/50">
-                    <IconComponent
-                      className={
-                        getQualityColor(result.ocena.uzupelnienie_witamin) ===
-                        "success"
-                          ? "bg-green-500/20"
-                          : getQualityColor(
-                              result.ocena.uzupelnienie_witamin
-                            ) === "warning"
-                          ? "bg-yellow-500/20"
-                          : "bg-red-500/20"
-                      }
-                    >
-                      {getQualityColor(result.ocena.uzupelnienie_witamin) ===
-                      "success" ? (
-                        <CheckCircle
-                          className="w-5 h-5 text-green-500/100"
-                          strokeWidth={1.75}
-                        />
-                      ) : getQualityColor(result.ocena.uzupelnienie_witamin) ===
-                        "warning" ? (
-                        <AlertTriangle
-                          className="w-5 h-5 text-yellow-500/100"
-                          strokeWidth={1.75}
-                        />
-                      ) : (
-                        <XCircle
-                          className="w-5 h-5 text-red-500/100"
-                          strokeWidth={1.75}
-                        />
-                      )}
-                    </IconComponent>
-                    <div className="text-center">
-                      <p className="text-xs text-secondary mb-0.5">
-                        Uzupełnienie witamin
-                      </p>
-                      <p className="text-sm font-semibold text-primary capitalize">
-                        {result.ocena.uzupelnienie_witamin}
-                      </p>
-                    </div>
-                  </div>
+                  <QualityIndicator
+                    quality={result.ocena.uzupelnienie_witamin}
+                    label="Uzupełnienie witamin"
+                  />
                 )}
                 {result.ocena.bilans_makro && (
-                  <div className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 bg-gray-50/50">
-                    <IconComponent
-                      className={
-                        getQualityColor(result.ocena.bilans_makro) === "success"
-                          ? "bg-green-500/20"
-                          : getQualityColor(result.ocena.bilans_makro) ===
-                            "warning"
-                          ? "bg-yellow-500/20"
-                          : "bg-red-500/20"
-                      }
-                    >
-                      {getQualityColor(result.ocena.bilans_makro) ===
-                      "success" ? (
-                        <CheckCircle
-                          className="w-5 h-5 text-green-500/100"
-                          strokeWidth={1.75}
-                        />
-                      ) : getQualityColor(result.ocena.bilans_makro) ===
-                        "warning" ? (
-                        <AlertTriangle
-                          className="w-5 h-5 text-yellow-500/100"
-                          strokeWidth={1.75}
-                        />
-                      ) : (
-                        <XCircle
-                          className="w-5 h-5 text-red-500/100"
-                          strokeWidth={1.75}
-                        />
-                      )}
-                    </IconComponent>
-                    <div className="text-center">
-                      <p className="text-xs text-secondary mb-0.5">
-                        Bilans makro
-                      </p>
-                      <p className="text-sm font-semibold text-primary capitalize">
-                        {result.ocena.bilans_makro}
-                      </p>
-                    </div>
-                  </div>
+                  <QualityIndicator
+                    quality={result.ocena.bilans_makro}
+                    label="Bilans makro"
+                  />
                 )}
               </div>
             </Card>
@@ -960,51 +842,27 @@ export const AnalyzeResult = ({ result }: { result: AnalysisResultData }) => {
             <Card className="flex-1 min-w-[280px] basis-full">
               <SectionTitle icon={UserCheck}>Odpowiednia dla</SectionTitle>
               <div className="flex flex-wrap gap-2 sm:gap-3">
-                {result.werdykt.odpowiednia_dla.kociat !== null &&
-                  result.werdykt.odpowiednia_dla.kociat && (
-                    <div className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200">
-                      <Baby className="w-4 sm:w-5 h-4 sm:h-5 text-green-600" />
-                      <span className="text-sm font-semibold text-green-700">
-                        Kociąt
-                      </span>
-                    </div>
-                  )}
-                {result.werdykt.odpowiednia_dla.doroslych !== null &&
-                  result.werdykt.odpowiednia_dla.doroslych && (
-                    <div className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200">
-                      <Cat className="w-4 sm:w-5 h-4 sm:h-5 text-green-600" />
-                      <span className="text-sm font-semibold text-green-700">
-                        Dorosłych
-                      </span>
-                    </div>
-                  )}
-                {result.werdykt.odpowiednia_dla.seniorow !== null &&
-                  result.werdykt.odpowiednia_dla.seniorow && (
-                    <div className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200">
-                      <Users className="w-4 sm:w-5 h-4 sm:h-5 text-green-600" />
-                      <span className="text-sm font-semibold text-green-700">
-                        Seniorów
-                      </span>
-                    </div>
-                  )}
-                {result.werdykt.odpowiednia_dla.alergikow !== null &&
-                  result.werdykt.odpowiednia_dla.alergikow && (
-                    <div className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200">
-                      <Sparkles className="w-4 sm:w-5 h-4 sm:h-5 text-green-600" />
-                      <span className="text-sm font-semibold text-green-700">
-                        Alergików
-                      </span>
-                    </div>
-                  )}
-                {result.werdykt.odpowiednia_dla.wybrednych !== null &&
-                  result.werdykt.odpowiednia_dla.wybrednych && (
-                    <div className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200">
-                      <Dog className="w-4 sm:w-5 h-4 sm:h-5 text-green-600" />
-                      <span className="text-sm font-semibold text-green-700">
-                        Wybrednych
-                      </span>
-                    </div>
-                  )}
+                {[
+                  { key: "kociat", icon: Baby, label: "Kociąt" },
+                  { key: "doroslych", icon: Cat, label: "Dorosłych" },
+                  { key: "seniorow", icon: Users, label: "Seniorów" },
+                  { key: "alergikow", icon: Sparkles, label: "Alergików" },
+                  { key: "wybrednych", icon: Dog, label: "Wybrednych" },
+                ].map(
+                  (item) =>
+                    result.werdykt.odpowiednia_dla[
+                      item.key as keyof typeof result.werdykt.odpowiednia_dla
+                    ] !== null &&
+                    result.werdykt.odpowiednia_dla[
+                      item.key as keyof typeof result.werdykt.odpowiednia_dla
+                    ] && (
+                      <SuitableBadge
+                        key={item.key}
+                        icon={item.icon}
+                        label={item.label}
+                      />
+                    )
+                )}
               </div>
             </Card>
           )}

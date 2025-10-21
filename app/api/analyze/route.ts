@@ -72,19 +72,22 @@ Twoim zadaniem jest przeanalizować skład karmy podany w cudzysłowie:
 "${minifyText(sanitizedValue)}"
 
 Zasady:
-Zwróć tylko dane w formacie JSON zgodnym z podanym interfejsem TypeScript.
-Bez komentarzy, opisów, prefixów \\\json\\\, ani tekstu przed/po.
-Brakujące dane - null.
-Nie wiesz? — wywnioskuj ze składu (np. monobiałkowa, węglowodany, Ca/P).
-Wylicz: stosunek Ca/P, węglowodany, inne zależne wartości.
-Dodaj zawsze zalety i wady w werdykcie.
-Zaznacz niepożądane składniki (cukier, zboża, GMO, barwniki, konserwanty).
-Oceniaj wg norm żywienia zwierząt (białko, tłuszcz, minerały itd.).
-Przyznaj ocenę 0–100 na podstawie całej analizy.
-Bądź surowy, obiektywny, precyzyjny.
-Nie zmieniaj nazw pól ani typów, nie dodawaj nic spoza struktury.
-Wynik musi być poprawnym JSON-em (parsowalnym przez JSON.parse).
-Minimalizuj białe znaki i nowe linie.
+Zwracaj tylko dane w JSON wg interfejsu TypeScript, bez komentarzy i tekstu poza nim.
+Braki = null.
+Nie wiesz? — wywnioskuj (np. monobiałkowa, Ca/P, węgle).
+Oblicz: Ca/P (2 miejsca), węglowodany = 100−(białko+tłuszcz+wilg+popiół), energię, inne zależne.
+Zawsze dodaj zalety i wady.
+Zaznacz niepożądane: cukier, zboża, GMO, barwniki, konserwanty.
+Oceniaj wg norm AAFCO/FEDIAF: białko, tłuszcz, minerały, Ca/P, witaminy, błonnik, energia.
+Dla junior/senior – odpowiednie normy.
+Brak danych → typowe wartości (oznacz przybliżenie).
+Oceń jakość składników, monobiałkowość, przejrzystość etykiety, bezpieczeństwo.
+Ocena 0–100 (surowa): skład 35%, minerały/CaP 20%, jakość 20%, brak dodatków 15%, etykieta 10%.
+Brak danych obniża ocenę.
+JSON musi być poprawny (parsowalny).
+Nie zmieniaj pól/typów, nie dodawaj nowych.
+Minimalizuj białe znaki.
+Bądź surowy, precyzyjny, obiektywny, opieraj się na wiedzy naukowej.
 
 Zachowaj dokładnie poniższą strukturę (nie dodawaj, nie usuwaj, nie zmieniaj nazw pól):
 
@@ -132,10 +135,7 @@ export interface AnalysisResultData {
   };
   meta: { kraj_produkcji: string | null; typ_bialka: string | null; zrodlo_danych: string | null; data_analizy: string };
 };
-
-
-
-  `),
+`),
     });
 
     console.log("AI Response:", result);
