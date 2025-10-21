@@ -2,7 +2,7 @@ import { minifyText } from "@/lib/utils";
 import { generateText } from "ai";
 import { z } from "zod";
 
-// export const runtime = "edge";
+export const runtime = "edge";
 
 // Schema walidacji inputu
 const AnalyzeInputSchema = z.object({
