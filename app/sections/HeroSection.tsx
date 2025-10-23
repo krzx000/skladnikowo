@@ -6,6 +6,8 @@ import { AnalyzeResult } from "../components/AnalyzeResult";
 import { AnalysisResultData } from "@/lib/types";
 import { Clock3, PawPrint, ShieldCheck } from "lucide-react";
 import { Icon } from "../components/Icon";
+import { AnalysisResult } from "../components/AnalysisResult";
+import { exampleAnalysis } from "@/tests/testVariables";
 
 const Feature = ({
   icon: IconComponent,
@@ -94,6 +96,11 @@ export const HeroSection = () => {
             <AnalyzeResult result={result} />
           </div>
         )}
+
+        <div className="w-full">
+          <AnalysisResult result={exampleAnalysis} />
+        </div>
+
         {/* Funkcje */}
         <div
           className="flex items-center justify-between w-full gap-4 mt-4 max-md:flex-wrap max-md:justify-center max-sm:justify-start"

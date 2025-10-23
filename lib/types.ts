@@ -14,7 +14,10 @@ export type Unit =
   | "dni"
   | "inne";
 
-export type RatingValue = 1 | 2 | 3 | 4 | null;
+export interface RatingValue {
+  rate: 1 | 2 | 3 | 4 | 5 | null;
+  description: string | null;
+}
 
 export interface Measurement {
   name: string;
@@ -27,8 +30,8 @@ export interface Measurement {
 }
 export interface IngredientPart {
   name: string;
-  declaratePercentage?: number | null;
-  estimatedPercentage?: number | null;
+  declarate_percentage?: number | null;
+  estimated_percentage?: number | null;
   role?: string | null; // np. "mięso", "warzywo", "dodatek funkcjonalny"
   alergen?: boolean | null;
   confidence?: number | null; // wartość od 0 do 1 określająca pewność pomiaru AI (jeśli dostępne)
@@ -46,18 +49,29 @@ export interface AnalysisResultData2 {
   species: "kot" | "pies" | "inne";
 
   // Rodzaj produktu
-  type: "mokra" | "sucha" | "półwilgotna" | "suszona" | "BARF" | "przysmak";
+  type:
+    | "Mokra karma"
+    | "Sucha karma"
+    | "Półwilgotna karma"
+    | "Suszona karma"
+    | "BARF"
+    | "Przysmak";
   // Przeznaczenie
   purpose:
-    | "kocię"
-    | "dorosły"
-    | "senior"
-    | "weterynaryjna"
-    | "hypoalergiczna"
-    | "sterylizowane"
-    | "uniwersalna"
-    | "szczenię"
-    | "inne";
+    | "Dla kociąt"
+    | "Dla dorosłych kotów"
+    | "Dla seniorów kotów"
+    | "Dla sterylizowanych kotów"
+    //
+    | "Dla szczeniąt"
+    | "Dla dorosłych psów"
+    | "Dla seniorów psów"
+    | "Dla sterylizowanych psów"
+    //
+    | "Uniwersalna"
+    | "Weterynaryjna"
+    | "Hypoalergiczna"
+    | "Dla innych";
 
   // Skład
   composition: {
@@ -72,7 +86,7 @@ export interface AnalysisResultData2 {
   };
 
   // Składniki analityczne
-  analyticalComponents: {
+  analytical_components: {
     humidity: Measurement | null; // Wilgotność
     protein: Measurement | null; // Białko surowe
     fat: Measurement | null; // Tłuszcz surowy
@@ -101,19 +115,19 @@ export interface AnalysisResultData2 {
   allergens: {
     detected: string[] | null; // wykryte alergeny
     potential: string[] | null; // potencjalne alergeny
-    glutenFree: boolean | null; // czy bezglutenowa
-    lactoseFree: boolean | null; // czy bezlaktozowa
+    gluten_free: boolean | null; // czy bezglutenowa
+    lactose_free: boolean | null; // czy bezlaktozowa
   };
 
   // Ocena
   rate: {
-    meatQuality: RatingValue; // Jakość mięsa
-    proteinContent: RatingValue; // Zawartość białka
-    fatContent: RatingValue; // Bilanms tłuszczu
-    calciumPhosphorusRatio: RatingValue; // Stosunek Ca/P
-    vitaminSupplementation: RatingValue; // Uzupełnienie witamin
-    macroBalance: RatingValue; // Bilans makro
-    overallRating: RatingValue; // Ogólna ocena
+    meat_quality: RatingValue; // Jakość mięsa
+    protein_content: RatingValue; // Zawartość białka
+    fat_content: RatingValue; // Bilanms tłuszczu
+    calcium_phosphorus_ratio: RatingValue; // Stosunek Ca/P
+    vitamin_supplementation: RatingValue; // Uzupełnienie witamin
+    macro_balance: RatingValue; // Bilans makro
+    overall_rating: RatingValue; // Ogólna ocena
     risks: string[] | null; // Ryzyka związane z produktem
     comment: string | null; // Komentarz
     score_0_100: number | null; // Ocena 0-100
@@ -121,17 +135,17 @@ export interface AnalysisResultData2 {
 
   // Werdykt końcowy
   verdict: {
-    suitableFor: {
-      kittens: boolean | null; // kociąt
+    suitable_for: {
+      young: boolean | null; // kociąt/szczeniąt
       adults: boolean | null; // dorosłych
       seniors: boolean | null; // seniorów
-      allergySufferers: boolean | null; // alergików
-      pickyEaters: boolean | null; // wybrednych
-      other: string[] | null; // inne grupy
+      allergy_sufferers: boolean | null; // alergików
     };
     advantages: string[] | null; // zalety
+    // wątpliwości
+    uncertainties: string[] | null; // wątpliwości
     disadvantages: string[] | null; // wady
-    finalRating:
+    final_rating:
       | "wybitna"
       | "bardzo dobra"
       | "dobra"
@@ -143,7 +157,7 @@ export interface AnalysisResultData2 {
 
   // Dodatkowe dane
   meta: {
-    resultConfidence: number | null; // wartość od 0 do 1 określająca ogólną pewność analizy AI
+    result_confidence: number | null; // wartość od 0 do 1 określająca ogólną pewność analizy AI
   };
 }
 
