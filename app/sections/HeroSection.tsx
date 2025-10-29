@@ -2,12 +2,10 @@
 import { useState } from "react";
 import { Picker } from "../components/Picker";
 import { AnalyzeInput } from "../components/AnalyzeInput";
-import { AnalyzeResult } from "../components/AnalyzeResult";
 import { AnalysisResultData } from "@/lib/types";
 import { Clock3, PawPrint, ShieldCheck } from "lucide-react";
 import { Icon } from "../components/Icon";
 import { AnalysisResult } from "../components/AnalysisResult";
-import { exampleAnalysis } from "@/tests/testVariables";
 
 const Feature = ({
   icon: IconComponent,
@@ -93,13 +91,13 @@ export const HeroSection = () => {
 
         {result && (
           <div className="w-full">
-            <AnalyzeResult result={result} />
+            <AnalysisResult result={result} />
           </div>
         )}
 
-        <div className="w-full">
+        {/* <div className="w-full">
           <AnalysisResult result={exampleAnalysis} />
-        </div>
+        </div> */}
 
         {/* Funkcje */}
         <div

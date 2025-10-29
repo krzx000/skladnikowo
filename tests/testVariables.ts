@@ -1,6 +1,6 @@
-import { AnalysisResultData2 } from "@/lib/types";
+import { AnalysisResultData } from "@/lib/types";
 
-export const exampleAnalysis: AnalysisResultData2 = {
+export const exampleAnalysis: AnalysisResultData = {
   name: "Carnilove Salmon & Turkey for Adult Cats",
   producent: "Vafo Praha",
   species: "kot",
@@ -87,19 +87,17 @@ export const exampleAnalysis: AnalysisResultData2 = {
     energy: {
       kcal_per_100g: {
         name: "Energia",
-        value: 380,
+        value: 400,
         unit: "kcal",
-        per: "na 100g",
         confidence: 0.9,
-        method: "oszacowanie-ai",
+        method: "etykieta",
       },
       kJ_per_100g: {
         name: "Energia",
-        value: 1590,
+        value: 300,
         unit: "kJ",
-        per: "na 100g",
         confidence: 0.9,
-        method: "oszacowanie-ai",
+        method: "etykieta",
       },
     },
     protein_dry_matter: {

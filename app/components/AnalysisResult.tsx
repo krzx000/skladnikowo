@@ -1,5 +1,14 @@
-import { AnalysisResultData2 } from "@/lib/types";
-import { Calendar, Cat, Dog, Rabbit, Star, Weight } from "lucide-react";
+import { AnalysisResultData } from "@/lib/types";
+import {
+  AlertCircle,
+  AlertTriangle,
+  Calendar,
+  Cat,
+  Dog,
+  Rabbit,
+  Star,
+  Weight,
+} from "lucide-react";
 import { Icon as Iconify } from "@iconify/react";
 import { Button } from "./Button";
 import { Icon } from "./Icon";
@@ -195,7 +204,41 @@ const SuitableCard = ({
   );
 };
 
-export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
+export const AnalysisResult = ({ result }: { result: AnalysisResultData }) => {
+  if (!result) {
+    return (
+      <Card className="bg-red-50 border-red-200">
+        <div className="flex items-center gap-3 text-red-600">
+          <AlertCircle className="w-6 h-6" />
+          <div>
+            <h3 className="font-bold text-lg">Brak danych</h3>
+            <p className="text-sm text-red-600/80">
+              Nie udało się załadować wyników analizy.
+            </p>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
+  // Walidacja podstawowych danych
+  if (!result.name) {
+    return (
+      <Card className="bg-yellow-50 border-yellow-200">
+        <div className="flex items-center gap-3 text-yellow-600">
+          <AlertTriangle className="w-6 h-6" />
+          <div>
+            <h3 className="font-bold text-lg">Niekompletne dane</h3>
+            <p className="text-sm text-yellow-600/80">
+              Wyniki analizy są niekompletne. Brakuje podstawowych informacji o
+              produkcie.
+            </p>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
   const handleDownloadPDF = async () => {
     try {
       const blob = await pdf(<AnalysisResultPDF result={result} />).toBlob();
@@ -684,7 +727,7 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
           {/* Energia */}
           {result.analytical_components.energy?.kcal_per_100g && (
             <div className="flex flex-col justify-center items-center self-stretch flex-grow-0 flex-shrink-0 relative gap-1 p-4 rounded-3xl bg-slate-100 mt-4">
-              <p className="flex-grow-0 flex-shrink-0 text-[32px] font-bold text-center text-primary">
+              <p className="flex-grow-0 flex-shrink-0 text-3xl font-bold text-center text-primary">
                 {result.analytical_components.energy.kcal_per_100g.value}
               </p>
               <p className="flex-grow-0 flex-shrink-0 text-base font-semibold text-center text-primary/60">
@@ -960,42 +1003,36 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
           <div className="flex flex-col gap-4">
             {/* First Row */}
             <div className="flex flex-col sm:flex-row gap-4">
-              {result.verdict.suitable_for.young !== null && (
-                <SuitableCard
-                  suitable={result.verdict.suitable_for.young}
-                  icon="fa-solid:baby"
-                  label={result.species === "pies" ? "Szczenięta" : "Kocięta"}
-                />
-              )}
+              <SuitableCard
+                suitable={result.verdict.suitable_for.young || false}
+                icon="fa-solid:baby"
+                label={result.species === "pies" ? "Szczenięta" : "Kocięta"}
+              />
 
-              {result.verdict.suitable_for.adults !== null && (
-                <SuitableCard
-                  suitable={result.verdict.suitable_for.adults}
-                  icon="f7:paw"
-                  label={
-                    result.species === "pies" ? "Dorosłe Psy" : "Dorosłe Koty"
-                  }
-                />
-              )}
+              <SuitableCard
+                suitable={result.verdict.suitable_for.adults || false}
+                icon="f7:paw"
+                label={
+                  result.species === "pies" ? "Dorosłe Psy" : "Dorosłe Koty"
+                }
+              />
             </div>
 
             {/* Second Row */}
             <div className="flex flex-col sm:flex-row gap-4">
-              {result.verdict.suitable_for.seniors !== null && (
-                <SuitableCard
-                  suitable={result.verdict.suitable_for.seniors}
-                  icon="ic:baseline-cake"
-                  label="Seniorzy"
-                />
-              )}
+              <SuitableCard
+                suitable={result.verdict.suitable_for.seniors || false}
+                icon="ic:baseline-cake"
+                label="Seniorzy"
+              />
 
-              {result.verdict.suitable_for.allergy_sufferers !== null && (
-                <SuitableCard
-                  suitable={result.verdict.suitable_for.allergy_sufferers}
-                  icon="fa6-solid:hand-dots"
-                  label="Alergicy"
-                />
-              )}
+              <SuitableCard
+                suitable={
+                  result.verdict.suitable_for.allergy_sufferers || false
+                }
+                icon="fa6-solid:hand-dots"
+                label="Alergicy"
+              />
             </div>
           </div>
         </Card>

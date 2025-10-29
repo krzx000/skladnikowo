@@ -8,7 +8,7 @@ import {
   StyleSheet,
   Font,
 } from "@react-pdf/renderer";
-import { AnalysisResultData2 } from "@/lib/types";
+import { AnalysisResultData } from "@/lib/types";
 
 // Register fonts with Polish characters support
 Font.register({
@@ -193,7 +193,7 @@ const capitalizeFirst = (str: string): string => {
 export const AnalysisResultPDF = ({
   result,
 }: {
-  result: AnalysisResultData2;
+  result: AnalysisResultData;
 }) => (
   <Document>
     <Page size="A4" style={styles.page}>

@@ -1,9 +1,271 @@
-import { minifyText } from "@/lib/utils";
+import { minifyText, sanitizeText } from "@/lib/utils";
 import { generateText } from "ai";
 import { z } from "zod";
+import type { AnalysisResultData } from "@/lib/types";
 
-// export const runtime = "edge";
+export const runtime = "edge";
 
+// String z definicją TypeScript interfejsu dla promptu
+const INTERFACE_DEFINITION = `
+export type Unit =
+  | "%"
+  | "g"
+  | "mg"
+  | "µg"
+  | "mg/kg"
+  | "µg/kg"
+  | "ppm"
+  | "kcal"
+  | "kJ"
+  | "CFU/g"
+  | "IU"
+  | "liczba"
+  | "dni"
+  | "inne";
+
+export interface RatingValue {
+  rate: 1 | 2 | 3 | 4 | 5 | null;
+  description: string | null;
+}
+
+export interface Measurement {
+  name: string;
+  value: number | null;
+  unit: Unit;
+  per?: string | null; // np. "na 100g", "na kg", "na porcję", itd.
+  confidence?: number | null; // wartość od 0 do 1 określająca pewność pomiaru AI (jeśli dostępne)
+  method?: string | null; // np. "etykieta", "analiza-lab HPLC", "oszacowanie-ai"
+  note?: string | null; // dodatkowe uwagi dotyczące pomiaru
+}
+export interface IngredientPart {
+  name: string;
+  declarate_percentage?: number | null;
+  estimated_percentage?: number | null;
+  role?: string | null; // np. "mięso", "warzywo", "dodatek funkcjonalny"
+  alergen?: boolean | null;
+  confidence?: number | null; // wartość od 0 do 1 określająca pewność pomiaru AI (jeśli dostępne)
+  notes?: string | null; // dodatkowe uwagi dotyczące składnika
+}
+
+export interface AnalysisResultData {
+  // Nazwa produktu
+  name: string | null;
+
+  // Producent
+  producent: string | null;
+
+  // Gatunek docelowy
+  species: "kot" | "pies" | "inne";
+
+  // Rodzaj produktu
+  type:
+    | "Mokra karma"
+    | "Sucha karma"
+    | "Półwilgotna karma"
+    | "Suszona karma"
+    | "BARF"
+    | "Przysmak";
+  // Przeznaczenie
+  purpose:
+    | "Dla kociąt"
+    | "Dla dorosłych kotów"
+    | "Dla seniorów kotów"
+    | "Dla sterylizowanych kotów"
+    //
+    | "Dla szczeniąt"
+    | "Dla dorosłych psów"
+    | "Dla seniorów psów"
+    | "Dla sterylizowanych psów"
+    //
+    | "Uniwersalna"
+    | "Weterynaryjna"
+    | "Hypoalergiczna"
+    | "Dla innych";
+
+  // Skład
+  composition: {
+    meal_and_offal: { name: string; percentage: number | null }[] | null;
+    fruits_and_vegetables: { name: string; percentage: number | null }[] | null;
+    grains: { name: string; percentage: number | null }[] | null;
+    other_additives: { name: string; percentage: number | null }[] | null;
+    contains_grains: boolean | null;
+    contains_sugar: boolean | null;
+    contains_gmo: boolean | null;
+    is_monoprotein: boolean | null;
+  };
+
+  // Składniki analityczne
+  analytical_components: {
+    humidity: Measurement | null; // Wilgotność
+    protein: Measurement | null; // Białko surowe
+    fat: Measurement | null; // Tłuszcz surowy
+    fiber: Measurement | null; // Włókno surowe
+    ash: Measurement | null; // Popiół surowy
+    carbohydrates: Measurement | null; // Węglowodany
+    energy: {
+      kcal_per_100g: Measurement | null; // kcal na 100g
+      kJ_per_100g: Measurement | null; // kJ na 100g
+    };
+
+    // wartości przeliczone na suchą masę (jeśli wilgotność znana)
+    protein_dry_matter?: Measurement | null; // Białko na suchej masie
+    fat_dry_matter?: Measurement | null; // Tłuszcz na suchej masie
+    ash_dry_matter?: Measurement | null; // Popiół na suchej masie
+  };
+  // Minerały i mikroelementy
+  minerals: Measurement[] | null; // Minerały
+  vitamins: Measurement[] | null; // Witaminy
+  microelements: Measurement[] | null; // Mikroelementy
+  oils: Measurement[] | null; // Oleje
+  other_functional_additives: Measurement[] | null; // Inne dodatki funkcjonalne
+  taurine_mg_kg: Measurement | null; // Tauryna mg/kg
+
+  // Alergeny
+  allergens: {
+    detected: string[] | null; // wykryte alergeny
+    potential: string[] | null; // potencjalne alergeny
+    gluten_free: boolean | null; // czy bezglutenowa
+    lactose_free: boolean | null; // czy bezlaktozowa
+  };
+
+  // Ocena
+  rate: {
+    meat_quality: RatingValue; // Jakość mięsa
+    protein_content: RatingValue; // Zawartość białka
+    fat_content: RatingValue; // Bilanms tłuszczu
+    calcium_phosphorus_ratio: RatingValue; // Stosunek Ca/P
+    vitamin_supplementation: RatingValue; // Uzupełnienie witamin
+    macro_balance: RatingValue; // Bilans makro
+    overall_rating: RatingValue; // Ogólna ocena
+    risks: string[] | null; // Ryzyka związane z produktem
+    comment: string | null; // Komentarz
+    score_0_100: number | null; // Ocena 0-100
+  };
+
+  // Werdykt końcowy
+  verdict: {
+    suitable_for: {
+      young: boolean | null; // kociąt/szczeniąt
+      adults: boolean | null; // dorosłych
+      seniors: boolean | null; // seniorów
+      allergy_sufferers: boolean | null; // alergików
+    };
+    advantages: string[] | null; // zalety
+    // wątpliwości
+    uncertainties: string[] | null; // wątpliwości
+    disadvantages: string[] | null; // wady
+    final_rating:
+      | "wybitna"
+      | "bardzo dobra"
+      | "dobra"
+      | "średnia"
+      | "słaba"
+      | "niezalecana"
+      | null;
+  };
+
+  // Dodatkowe dane
+  meta: {
+    result_confidence: number | null; // wartość od 0 do 1 określająca ogólną pewność analizy AI
+  };
+}
+`;
+
+const SYSTEM = minifyText(`
+        Jesteś ekspertem od analizy składu karmy dla zwierząt.
+        
+        KRYTYCZNE: Zwróć TYLKO czysty JSON zgodny z poniższym interfejsem TypeScript.
+        NIE używaj markdown code blocks, NIE otaczaj \`\`\`json, po prostu zwróć czysty JSON obiekt.
+        Twoja odpowiedź MUSI zaczynać się od { i kończyć się na }.
+        
+        INTERFEJS TYPESCRIPT DO KTÓREGO MUSISZ SIĘ DOSTOSOWAĆ:
+        ${INTERFACE_DEFINITION}
+        
+        NAJWAŻNIEJSZE: MUSISZ WYPEŁNIĆ WSZYSTKIE POLA!
+        
+        OBLIGATORYJNE POLA (zawsze muszą być wypełnione):
+        1. name, producent, species, type, purpose
+        2. composition - pełny obiekt z wszystkimi polami
+        3. analytical_components - WYMAGANE pola:
+           - protein, fat, fiber, ash (każde jako obiekt MeasurementSchema: {name, value, unit, per, ...})
+           - moisture lub humidity (jako obiekt MeasurementSchema)
+           - carbohydrates (opcjonalne, jako obiekt MeasurementSchema)
+           - energy: {kcal_per_100g: LICZBA, kJ_per_100g: LICZBA} - zwróć liczby, nie obiekty!
+        4. minerals, vitamins, microelements, oils (tablice obiektów MeasurementSchema lub null)
+        5. other_functional_additives - tablica obiektów MeasurementSchema z polami: name, value, unit (NIE percentage!)
+        6. taurine_mg_kg - możesz zwrócić liczbę (np. 2000) lub obiekt MeasurementSchema, lub null
+        7. allergens - ZAWSZE wypełnij cały obiekt (detected, potential, gluten_free, lactose_free)
+        8. rate - ZAWSZE wypełnij WSZYSTKIE 7 ocen (meat_quality, protein_content, fat_content, calcium_phosphorus_ratio, vitamin_supplementation, macro_balance, overall_rating) + risks, comment, score_0_100
+        9. verdict - ZAWSZE wypełnij suitable_for (young, adults, seniors, allergy_sufferers), advantages, uncertainties, disadvantages, final_rating
+        10. meta - ZAWSZE wypełnij result_confidence
+        
+        ZASADY WYPEŁNIANIA:
+        - Wywnioskuj wszystko logicznie ze składu (monobiałkowa, Ca/P, węglowodany, źródło białka)
+        - Oblicz brakujące wartości: Ca/P (2 miejsca), węglowodany = 100-(białko+tłuszcz+wilgotność+popiół)
+        - Energia: energy.kcal_per_100g i energy.kJ_per_100g to LICZBY (nie obiekty!)
+        - Dla additives używaj MeasurementSchema: {name: "MOS", value: 0.1, unit: "%", per: "na kg"}
+        - ZAWSZE oceń jakość mięsa, białka, tłuszczu, Ca/P, witaminy, makro i ogólną
+        - ZAWSZE dodaj zalety i wady produktu (minimum 2-3 punkty każdy)
+        - ZAWSZE oceń odpowiedniość dla różnych grup wiekowych
+        - ZAWSZE dodaj komentarz podsumowujący i ocenę 0-100
+        - Jeśli naprawdę nie możesz czegoś określić - zwróć null, ale POLE MUSI ISTNIEĆ!
+        
+        NIEPOŻĄDANE składniki:
+        - Cukier, zboża, GMO, barwniki, konserwanty, sztuczne aromaty
+        - Polepszacze smaku, produkty uboczne niskiej jakości
+        
+        OCENA wg AAFCO/FEDIAF:
+        - Białko, tłuszcz, minerały, Ca/P, witaminy, błonnik, energia, wilgotność
+        - Junior/Senior > odpowiednie normy
+        - Brak danych > typowe wartości (oznacz przybliżenie)
+        
+        JAKOŚĆ składników (ważność malejąca):
+        1. Mięso świeże
+        2. Mięso suszone
+        3. Produkty pochodne
+        4. Mączki
+        
+        NEGATYWY:
+        - Wypełniacze (kukurydza, pszenica, ryż, groch) = gorsza ocena
+        - Brak transparentności = niższa ocena
+        - Nadmiar: sól, popiół, fosfor, magnez = obniżenie punktacji
+        - Marketingowe slogany bez źródeł = kara punktowa
+        
+        POZYTYWY:
+        - Składniki funkcjonalne: olej z łososia, tauryna, prebiotyki, L-karnityna
+        - Równowaga omega-3/6
+        - Produkt pełnoporcjowy
+        - Prasowana na zimno > ekstrudowana
+        
+        SYSTEM OCENY (0-100, SUROWO):
+        - Skład: 35%
+        - Minerały/Ca:P: 20%
+        - Jakość: 20%
+        - Brak dodatków: 15%
+        - Transparentność etykiety: 10%
+        DLA: 
+        meat_quality
+        protein_content
+        fat_content
+        calcium_phosphorus_ratio
+        vitamin_supplementation
+        macro_balance w descriptio maksymalnie 12 słów.
+
+
+        75+ TYLKO dla karm wysokiej jakości z czystym składem!
+        
+        Bądź surowy, dokładny, logiczny, transparentny i spójny.
+        Werdykt: jasny, rzeczowy, bez marketingu.
+        
+        Jeśli skład w innym języku → przetłumacz na polski.
+        Jeśli jednostki imperialne → przelicz na metryczne.
+        
+        Jeżeli jednostka jest inna niż dozwolone, przelicz na jedną z dozwolonych jednostek.
+        NIE DODAWAJ ŻADNYCH INNYCH PÓL NIŻ TE Z INTERFEJSU!
+        WILGTOŚĆ = humidity
+        ZWRÓĆ ENERGIA JAKO OBIEKT Measurement 
+        PAMIĘTAJ: Każde pole w schemacie MUSI być wypełnione - jeśli nie wiesz, zwróć null, ale pole musi istnieć w odpowiedzi!
+      `);
 // Schema walidacji inputu
 const AnalyzeInputSchema = z.object({
   value: z
@@ -56,134 +318,48 @@ export async function POST(req: Request) {
     const { value } = validationResult.data;
 
     // Dodatkowe zabezpieczenie - usuń potencjalnie niebezpieczne znaki
-    const sanitizedValue = value
-      .replace(/<[^>]*>/g, "") // usuń tagi HTML
-      .replace(/[<>]/g, ""); // usuń pozostałe < >
+    const sanitizedValue = sanitizeText(value);
 
     const result = await generateText({
       model: "meituan/longcat-flash-chat",
-      maxOutputTokens: 4096,
-      system: `
-      Zwracaj tylko dane w JSON wg interfejsu TypeScript, bez komentarzy i tekstu poza nim.
-      Braki = null.
-      Nie wiesz? — wywnioskuj logicznie ze składu (np. monobiałkowa, Ca/P, węgle, źródło białka).
-      Oblicz: Ca/P (2 miejsca), węglowodany = 100-(białko+tłuszcz+wilg+popiół), energię, błonnik, inne zależne.
-      Uwzględnij energię metaboliczną (kcal/kg) – oszacuj jeśli brak danych.
-      Zawsze dodaj zalety i wady, nawet przy dobrym produkcie.
-      Zaznacz niepożądane: cukier, zboża, GMO, barwniki, konserwanty, sztuczne aromaty, polepszacze smaku, produkty uboczne niskiej jakości.
-      Oceniaj wg norm AAFCO/FEDIAF (lub najbliższych dostępnych): białko, tłuszcz, minerały, Ca/P, witaminy, błonnik, energia, wilgotność.
-      Dla junior/senior – odpowiednie normy.
-      Brak danych → przyjmij typowe wartości (oznacz przybliżenie i wpływ na wynik).
-      Uwzględnij jakość i pochodzenie składników: mięso świeże > suszone > produkty pochodne > mączki.
-      Analizuj udział składników roślinnych – im więcej wypełniaczy (kukurydza, pszenica, ryż, groch) tym gorzej.
-      Oceń transparentność etykiety – brak szczegółów = niższa ocena.
-      Uwzględnij stosunek tłuszczu do białka i równowagę kwasów omega-3/6 (jeśli dane).
-      Zwróć uwagę na zawartość soli, popiołu, fosforu, magnezu – nadmiar = obniżenie punktacji.
-      Analizuj ryzyko dla zdrowia: otyłość, kamienie moczowe, alergie, nadmiar fosforu, zły Ca/P, dodatki chemiczne.
-      Zaznacz, jeśli produkt zawiera marketingowe określenia typu „premium”, „naturalna”, bez podania źródeł.
-      Uwzględnij obecność składników funkcjonalnych (olej z łososia, drożdże, tauryna, glukozamina, prebiotyki, L-karnityna, witaminy naturalne).
-      Sprawdź kompletność diety – czy produkt pełnoporcjowy czy uzupełniający.
-      Analizuj, czy proporcje składników zapewniają prawidłowe trawienie i równowagę mikroelementów.
-      Oceń proces produkcji, jeśli możliwe (prasowana na zimno > ekstrudowana).
-      Uwzględnij zapach, teksturę i praktyczność karmienia (jeśli dane).
-      Ocena 0–100 (surowa): skład 35%, minerały/CaP 20%, jakość 20%, brak dodatków 15%, etykieta 10%.
-      75 tylko dla karm wysokiej jakości z czystym składem.
-      Brak danych, niejasne opisy lub nieprecyzyjne źródła składników = kara punktowa.
-      Oceniaj całość obiektywnie, bez pobłażania, bazując na wiedzy naukowej i fizjologii zwierząt.
-      Podaj w werdykcie jasny, rzeczowy opis – bez marketingu.
-      JSON musi być poprawny (parsowalny przez JSON.parse w JavaScript). To jest bardzo ważne, żeby JSON był poprawny.
-      Nie zmieniaj nazw pól ani typów, nie dodawaj nowych.
-      Minimalizuj białe znaki i nowe linie.
-      Bądź surowy, dokładny, logiczny, transparentny i spójny w ocenach.
-      Wyniki muszą być możliwe do powtórzenia przy tych samych danych.
-      Jeśli skład jest bardzo niekompletny lub podejrzany, zaznacz to w komentarzu i obniż ocenę.
-      Jeśli produkt jest całkowicie nieanalizowalny, zwróć odpowiedni błąd.
-      Jeśli skład jest w innym języku niż polski lub angielski, przetłumacz go najpierw na polski i wtedy analizuj.
-      Jeśli skład zawiera jednostki miary w innych systemach (imperialne itp.), przelicz je na metryczne przed analizą.
-      `,
-      //   model: "openai/gpt-5-nano",
-      //   model: "amazon/nova-micro",
-      prompt: minifyText(`
-      "${sanitizedValue}"
-      Zasady:
-      Zachowaj dokładnie poniższą strukturę (nie dodawaj, nie usuwaj, nie zmieniaj nazw pól):
-
-      export interface AnalysisResultData {
-        nazwa: string;
-        producent: string | null;
-        gatunek: "kot" | "pies" | "inne";
-        rodzaj: "mokra" | "sucha" | "przysmak";
-        przeznaczenie: "kocię" | "dorosły" | "senior" | "uniwersalna" | "szczenię" | "inne";
-        sklad: {
-          mieso_i_podroby: { name: string; percentage: number | null }[] | null;
-          warzywa_owoce: { name: string; percentage: number | null }[] | null;
-          inne_dodatki: { name: string; percentage: number | null }[] | null;
-          zboza: boolean | null;
-          cukier: boolean | null;
-          gmo: boolean | null;
-          monobialkowa: boolean | null;
-        };
-        skladniki_analityczne: { name: string; value: number | null }[];
-        mineralne: { name: string; value: number | null }[];
-        dodatki_dietetyczne: {
-          tauryna_mg_kg: number | null;
-          witaminy: { name: string; value: number | null }[];
-          mikroelementy: { name: string; value: number | null }[] | null;
-          oleje: { name: string; value: number | null }[] | null;
-          inne_dodatki_funkcjonalne: { name: string; value: number | null }[] | null;
-        };
-        energia: { kcal_na_100g: number | null; kJ_na_100g: number | null };
-        ocena: {
-          jakosc_miesa: "bardzo dobra" | "dobra" | "średnia" | "słaba" | null;
-          zawartosc_bialka: "bardzo dobra" | "dobra" | "średnia" | "słaba" | null;
-          zawartosc_tluszczu: "bardzo dobra" | "dobra" | "średnia" | "słaba" | null;
-          stosunek_Ca_P: "prawidłowy" | "zaburzony" | "brak danych" | null;
-          uzupelnienie_witamin: "pełne" | "częściowe" | "brak danych" | null;
-          bilans_makro: "dobry" | "średni" | "zły" | null;
-          komentarz: string | null;
-          ogolna_ocena: "wybitna" | "bardzo dobra" | "dobra" | "średnia" | "słaba" | null;
-          ocena_0_100: number | null;
-        };
-        werdykt: {
-          odpowiednia_dla: { kociat: boolean | null; doroslych: boolean | null; seniorow: boolean | null; alergikow: boolean | null; wybrednych: boolean | null };
-          zalety: string[];
-          wady: string[];
-          ocena_koncowa: "wybitna" | "bardzo dobra" | "dobra" | "średnia" | "słaba" | "niezalecana" | null;
-        };
-        meta: { kraj_produkcji: string | null; typ_bialka: string | null; zrodlo_danych: string | null; data_analizy: string };
-      };
-      `),
+      // model: "openai/gpt-5-nano",
+      maxOutputTokens: 32000,
+      // model: "amazon/nova-micro",
+      system: SYSTEM,
+      prompt: `Przeanalizuj dokładnie poniższy skład karmy dla zwierząt (psów/kotów):\n\n"${sanitizedValue}"\n\nZwróć KOMPLETNĄ analizę jako CZYSTY JSON zgodny z interfejsem TypeScript. MUSISZ wypełnić WSZYSTKIE pola (jeśli nie znasz wartości, zwróć null).\n\nKRYTYCZNE: Zwróć TYLKO czysty JSON, bez żadnych markdown code blocks ani dodatkowych znaków!`,
     });
 
     console.log("AI Response:", result);
 
+    // Wyciągnij tekst i oczyść z markdown jeśli występuje
+    let jsonText = result.text.trim();
+
+    // Usuń markdown code blocks jeśli AI je użył mimo instrukcji
+    if (jsonText.startsWith("```")) {
+      console.log("Wykryto markdown code block, usuwam...");
+      jsonText = jsonText
+        .replace(/^```json?\n?/, "")
+        .replace(/\n?```$/, "")
+        .trim();
+    }
+
+    console.log("Czysty JSON text:", jsonText.substring(0, 200) + "...");
+
+    // Sparsuj JSON
+    let analysisData: AnalysisResultData;
     try {
-      // Parsuj JSON z odpowiedzi AI
-      const parsed = JSON.parse(result.text);
-
-      // Napraw strukturę jeśli meta jest w werdykt
-      if (parsed.werdykt?.meta && !parsed.meta) {
-        parsed.meta = parsed.werdykt.meta;
-        delete parsed.werdykt.meta;
-      }
-
-      // Napraw datę jeśli jest w złym formacie
-      if (parsed.meta?.data_analizy) {
-        parsed.meta.data_analizy = new Date().toISOString();
-      }
-
-      console.log("Parsed and fixed:", JSON.stringify(parsed));
-
-      return new Response(JSON.stringify(parsed), {
-        headers: { "Content-Type": "application/json" },
-      });
-    } catch (error) {
-      console.error("JSON Parse Error:", error);
-      console.error("Raw text:", result.text);
+      analysisData = JSON.parse(jsonText);
+    } catch (parseError) {
+      console.error("Błąd parsowania JSON:", parseError);
+      console.error("Otrzymany tekst:", jsonText);
       return new Response(
         JSON.stringify({
-          error: "Invalid JSON from AI",
-          details: error instanceof Error ? error.message : "Unknown error",
+          error: "Błąd parsowania odpowiedzi AI",
+          details:
+            parseError instanceof Error
+              ? parseError.message
+              : "Unknown parse error",
+          receivedText: jsonText.substring(0, 500),
         }),
         {
           status: 500,
@@ -191,8 +367,15 @@ export async function POST(req: Request) {
         }
       );
     }
+
+    console.log("Analysis data:", JSON.stringify(analysisData, null, 2));
+
+    return new Response(JSON.stringify(analysisData), {
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
     console.error("Request Error:", error);
+
     return new Response(
       JSON.stringify({
         error: "Błąd przetwarzania żądania",

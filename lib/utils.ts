@@ -38,3 +38,35 @@ export function capitalizeFirstLetter(str: string): string {
   if (!str) return str;
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
+/**
+ * Sanitizes a text string by removing HTML tags and escaping special characters.
+ *
+ * This function performs the following operations:
+ * 1. Removes all HTML tags from the input string
+ * 2. Escapes special HTML characters to their entity equivalents:
+ *    - & becomes &amp;
+ *    - < becomes &lt;
+ *    - > becomes &gt;
+ *    - " becomes &quot;
+ *    - ' becomes &#39;
+ *
+ * @param input - The text string to sanitize
+ * @returns The sanitized text string with HTML tags removed and special characters escaped
+ *
+ * @example
+ * ```typescript
+ * sanitizeText('<script>alert("xss")</script>') // Returns: '&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;'
+ * sanitizeText('Hello <b>World</b>') // Returns: 'Hello World'
+ * sanitizeText('Tom & Jerry') // Returns: 'Tom &amp; Jerry'
+ * ```
+ */
+export function sanitizeText(input: string): string {
+  return input
+    .replace(/<[^>]*>/g, "") // usuń tagi HTML
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
