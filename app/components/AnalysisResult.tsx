@@ -2,6 +2,8 @@ import { AnalysisResultData2 } from "@/lib/types";
 import { Calendar, Cat, Dog, Rabbit, Star, Weight } from "lucide-react";
 import { Icon as Iconify } from "@iconify/react";
 import { Button } from "./Button";
+import { pdf } from "@react-pdf/renderer";
+import { AnalysisResultPDF } from "./AnalysisResultPDF";
 
 // Helper function to capitalize first letter
 const capitalizeFirst = (str: string): string => {
@@ -184,6 +186,31 @@ const SuitableCard = ({
 };
 
 export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
+  // Function to download PDF
+  const handleDownloadPDF = async () => {
+    try {
+      // Generate PDF blob
+      const blob = await pdf(<AnalysisResultPDF result={result} />).toBlob();
+
+      // Create download link
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `analiza-${
+        result.name?.replace(/\s+/g, "-").toLowerCase() || "produkt"
+      }.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Clean up
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      alert("Wystąpił błąd podczas generowania PDF");
+    }
+  };
+
   // Species configuration
   const speciesConfig = {
     pies: { icon: Dog, label: "Dla psów" },
@@ -728,7 +755,7 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
                       Potencjalne Alergeny
                     </p>
                   </div>
-                  <div className="flex flex-col">
+                  <div className="flex flex-col gap-1">
                     {result.allergens.potential.map((allergen, index) => (
                       <div
                         key={index}
@@ -972,7 +999,7 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
 
         {/* Rekomendacja i przyciski */}
         {result.rate.comment && (
-          <div className="flex flex-col justify-center items-start self-stretch flex-grow-0 flex-shrink-0 gap-3 md:gap-2 p-4 rounded-2xl md:rounded-3xl bg-white/[0.15] backdrop-blur">
+          <div className="flex flex-col justify-center items-start self-stretch flex-grow-0 flex-shrink-0 gap-3 md:gap-2 p-4 rounded-2xl md:rounded-3xl bg-white/[0.15] backdrop-blur-lg">
             <div className="flex flex-col justify-center items-center self-stretch flex-grow-0 flex-shrink-0 relative">
               <p className="self-stretch flex-grow-0 flex-shrink-0 text-xs md:text-sm text-center text-white">
                 <span className="text-xs md:text-sm font-bold text-center text-white">
@@ -988,6 +1015,7 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
               <Button
                 variant="white"
                 className="rounded-[56px] w-full sm:w-auto"
+                onClick={handleDownloadPDF}
               >
                 Pobierz Analizę
               </Button>
