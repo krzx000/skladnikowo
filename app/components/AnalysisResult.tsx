@@ -2,16 +2,11 @@ import { AnalysisResultData2 } from "@/lib/types";
 import { Calendar, Cat, Dog, Rabbit, Star, Weight } from "lucide-react";
 import { Icon as Iconify } from "@iconify/react";
 import { Button } from "./Button";
+import { Icon } from "./Icon";
 import { pdf } from "@react-pdf/renderer";
 import { AnalysisResultPDF } from "./AnalysisResultPDF";
+import { capitalizeFirstLetter } from "@/lib/utils";
 
-// Helper function to capitalize first letter
-const capitalizeFirst = (str: string): string => {
-  if (!str) return str;
-  return str.charAt(0).toUpperCase() + str.slice(1);
-};
-
-// Helper Components
 const Card = ({
   className,
   children,
@@ -30,32 +25,6 @@ const Card = ({
   );
 };
 
-const IconBadge = ({ icon, color }: { icon: string; color: string }) => {
-  // Mapowanie kolorów na pełne klasy Tailwind (wymagane dla statycznej analizy)
-  const colorClasses: Record<string, { bg: string; text: string }> = {
-    lime: { bg: "bg-lime-500/20", text: "text-lime-500" },
-    blue: { bg: "bg-blue-500/20", text: "text-blue-500" },
-    yellow: { bg: "bg-yellow-500/20", text: "text-yellow-500" },
-    indigo: { bg: "bg-indigo-500/20", text: "text-indigo-500" },
-    cyan: { bg: "bg-cyan-500/20", text: "text-cyan-500" },
-    green: { bg: "bg-green-500/20", text: "text-green-500" },
-    red: { bg: "bg-red-500/20", text: "text-red-500" },
-    purple: { bg: "bg-purple-500/20", text: "text-purple-500" },
-    orange: { bg: "bg-orange-500/20", text: "text-orange-500" },
-    pink: { bg: "bg-pink-500/20", text: "text-pink-500" },
-  };
-
-  const classes = colorClasses[color] || colorClasses.blue; // fallback do blue
-
-  return (
-    <div
-      className={`w-12 h-12 ${classes.bg} rounded-full flex justify-center items-center`}
-    >
-      <Iconify icon={icon} className={`${classes.text} text-lg`} />
-    </div>
-  );
-};
-
 const RatingCard = ({
   icon,
   color,
@@ -69,10 +38,27 @@ const RatingCard = ({
   title: string;
   description: string | null;
 }) => {
+  const colorClasses: Record<string, { bg: string; text: string }> = {
+    lime: { bg: "bg-lime-500/20", text: "text-lime-500" },
+    blue: { bg: "bg-blue-500/20", text: "text-blue-500" },
+    yellow: { bg: "bg-yellow-500/20", text: "text-yellow-500" },
+    indigo: { bg: "bg-indigo-500/20", text: "text-indigo-500" },
+    cyan: { bg: "bg-cyan-500/20", text: "text-cyan-500" },
+    green: { bg: "bg-green-500/20", text: "text-green-500" },
+    red: { bg: "bg-red-500/20", text: "text-red-500" },
+    purple: { bg: "bg-purple-500/20", text: "text-purple-500" },
+    orange: { bg: "bg-orange-500/20", text: "text-orange-500" },
+    pink: { bg: "bg-pink-500/20", text: "text-pink-500" },
+  };
+
+  const classes = colorClasses[color] || colorClasses.blue;
+
   return (
     <Card className="flex flex-col justify-between items-start min-h-[140px]">
       <div className="self-stretch inline-flex justify-between items-start">
-        <IconBadge icon={icon} color={color} />
+        <Icon className={`w-12 h-12 ${classes.bg}`}>
+          <Iconify icon={icon} className={`${classes.text} text-lg`} />
+        </Icon>
         <div className="inline-flex flex-col justify-center items-end">
           <div className="text-center justify-center text-zinc-700 text-2xl md:text-3xl font-extrabold leading-none">
             {rate}/5
@@ -140,14 +126,10 @@ const SectionHeader = ({
 }) => {
   return (
     <div className="flex items-center gap-3 md:gap-4">
-      <div
-        className={`flex justify-center items-center w-9 h-9 md:w-10 md:h-10 rounded-full ${bgColor}`}
-      >
-        <Iconify icon={icon} className={`w-5 h-5 md:w-6 md:h-6 ${iconColor}`} />
-      </div>
-      <h2 className={`text-xl md:text-2xl font-bold text-purple-900`}>
-        {title}
-      </h2>
+      <Icon className={` ${bgColor}`} size="large">
+        <Iconify width={"1.25rem"} icon={icon} className={`${iconColor}`} />
+      </Icon>
+      <h2 className={`text-xl md:text-2xl font-bold text-primary`}>{title}</h2>
     </div>
   );
 };
@@ -186,13 +168,10 @@ const SuitableCard = ({
 };
 
 export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
-  // Function to download PDF
   const handleDownloadPDF = async () => {
     try {
-      // Generate PDF blob
       const blob = await pdf(<AnalysisResultPDF result={result} />).toBlob();
 
-      // Create download link
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -203,7 +182,6 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
       link.click();
       document.body.removeChild(link);
 
-      // Clean up
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error generating PDF:", error);
@@ -211,7 +189,6 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
     }
   };
 
-  // Species configuration
   const speciesConfig = {
     pies: { icon: Dog, label: "Dla psów" },
     kot: { icon: Cat, label: "Dla kotów" },
@@ -221,7 +198,6 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
   const currentSpecies =
     speciesConfig[result.species as keyof typeof speciesConfig];
 
-  // Rating cards configuration
   const ratingCards = [
     [
       {
@@ -271,7 +247,6 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
     ],
   ];
 
-  // Prepare and sort composition sections by total percentage (descending)
   const compositionSections = [
     {
       key: "meal_and_offal",
@@ -359,19 +334,20 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
         ))}
       </div>
 
-      {/* Podział składników i Profil odżywczy - obok siebie */}
       <div className="flex flex-col lg:flex-row gap-4">
         {/* Podział składników */}
         <Card className="flex-col justify-start items-start flex-1 overflow-hidden gap-4 p-8 rounded-[48px]">
           <div className="flex justify-start items-center self-stretch flex-grow-0 flex-shrink-0 gap-4">
             <div className="">
-              <IconBadge
-                icon={"streamline-plump:fork-knife-solid"}
-                color={"orange"}
-              />
+              <Icon className="w-12 h-12 bg-orange-500/20">
+                <Iconify
+                  icon={"streamline-plump:fork-knife-solid"}
+                  className="text-orange-500 text-lg"
+                />
+              </Icon>
             </div>
             <div className="flex flex-col justify-center items-end flex-grow-0 flex-shrink-0 relative">
-              <p className="flex-grow-0 flex-shrink-0 text-2xl font-bold text-left text-[#50304d]">
+              <p className="flex-grow-0 flex-shrink-0 text-2xl font-bold text-left text-primary">
                 Podział składników
               </p>
             </div>
@@ -387,7 +363,7 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
                     icon={section.icon}
                     className={`${section.color} text-xl`}
                   />
-                  <p className="flex-grow-0 flex-shrink-0 text-lg font-bold text-left text-[#50304d]">
+                  <p className="flex-grow-0 flex-shrink-0 text-lg font-bold text-left text-primary">
                     {section.title} ({section.totalPercentage.toFixed(0)}%)
                   </p>
                 </div>
@@ -397,12 +373,12 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
                       key={index}
                       className="flex justify-between items-center self-stretch flex-grow-0 flex-shrink-0"
                     >
-                      <p className="flex-grow-0 flex-shrink-0 text-base text-left text-[#50304d]">
-                        {capitalizeFirst(item.name)}
+                      <p className="flex-grow-0 flex-shrink-0 text-base text-left text-primary">
+                        {capitalizeFirstLetter(item.name)}
                       </p>
                       <div className="flex items-center gap-2">
                         {item.percentage !== null && (
-                          <p className="flex-grow-0 flex-shrink-0 text-base font-semibold text-right text-[#50304d]">
+                          <p className="flex-grow-0 flex-shrink-0 text-base font-semibold text-right text-primary">
                             {item.percentage}%
                           </p>
                         )}
@@ -427,10 +403,15 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
         <Card className="flex-col justify-start items-start flex-1 overflow-hidden gap-4 p-8 rounded-[48px]">
           <div className="flex justify-start items-center self-stretch flex-grow-0 flex-shrink-0 gap-4">
             <div className="">
-              <IconBadge icon={"tabler:chart-pie-filled"} color={"green"} />
+              <Icon className="w-12 h-12 bg-green-500/20">
+                <Iconify
+                  icon={"tabler:chart-pie-filled"}
+                  className="text-green-500 text-lg"
+                />
+              </Icon>
             </div>
             <div className="flex flex-col justify-center items-end flex-grow-0 flex-shrink-0 relative">
-              <p className="flex-grow-0 flex-shrink-0 text-2xl font-bold text-left text-[#50304d]">
+              <p className="flex-grow-0 flex-shrink-0 text-2xl font-bold text-left text-primary">
                 Profil odżywczy
               </p>
             </div>
@@ -440,10 +421,10 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
             {result.analytical_components.humidity && (
               <div className="flex flex-col justify-start items-start self-stretch flex-grow-0 flex-shrink-0 gap-1">
                 <div className="flex justify-between items-center self-stretch flex-grow-0 flex-shrink-0 relative">
-                  <p className="flex-grow-0 flex-shrink-0 text-xl font-semibold text-center text-[#50304d]">
+                  <p className="flex-grow-0 flex-shrink-0 text-xl font-semibold text-center text-primary">
                     Wilgotność
                   </p>
-                  <p className="flex-grow-0 flex-shrink-0 text-2xl font-bold text-center text-[#50304d]">
+                  <p className="flex-grow-0 flex-shrink-0 text-2xl font-bold text-center text-primary">
                     {result.analytical_components.humidity.value}
                     {result.analytical_components.humidity.unit}
                   </p>
@@ -463,10 +444,10 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
             {result.analytical_components.protein && (
               <div className="flex flex-col justify-start items-start self-stretch flex-grow-0 flex-shrink-0 gap-1">
                 <div className="flex justify-between items-center self-stretch flex-grow-0 flex-shrink-0 relative">
-                  <p className="flex-grow-0 flex-shrink-0 text-xl font-semibold text-center text-[#50304d]">
+                  <p className="flex-grow-0 flex-shrink-0 text-xl font-semibold text-center text-primary">
                     Białko Surowe
                   </p>
-                  <p className="flex-grow-0 flex-shrink-0 text-2xl font-bold text-center text-[#50304d]">
+                  <p className="flex-grow-0 flex-shrink-0 text-2xl font-bold text-center text-primary">
                     {result.analytical_components.protein.value}
                     {result.analytical_components.protein.unit}
                   </p>
@@ -489,10 +470,10 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
             {result.analytical_components.carbohydrates && (
               <div className="flex flex-col justify-start items-start self-stretch flex-grow-0 flex-shrink-0 gap-1">
                 <div className="flex justify-between items-center self-stretch flex-grow-0 flex-shrink-0 relative">
-                  <p className="flex-grow-0 flex-shrink-0 text-xl font-semibold text-center text-[#50304d]">
+                  <p className="flex-grow-0 flex-shrink-0 text-xl font-semibold text-center text-primary">
                     Węglowodany
                   </p>
-                  <p className="flex-grow-0 flex-shrink-0 text-2xl font-bold text-right text-[#50304d]">
+                  <p className="flex-grow-0 flex-shrink-0 text-2xl font-bold text-right text-primary">
                     {result.analytical_components.carbohydrates.value}
                     {result.analytical_components.carbohydrates.unit}
                   </p>
@@ -515,10 +496,10 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
             {result.analytical_components.fat && (
               <div className="flex flex-col justify-start items-start self-stretch flex-grow-0 flex-shrink-0 gap-1">
                 <div className="flex justify-between items-center self-stretch flex-grow-0 flex-shrink-0 relative">
-                  <p className="flex-grow-0 flex-shrink-0 text-xl font-semibold text-center text-[#50304d]">
+                  <p className="flex-grow-0 flex-shrink-0 text-xl font-semibold text-center text-primary">
                     Tłuszcz Surowy
                   </p>
-                  <p className="flex-grow-0 flex-shrink-0 text-2xl font-bold text-right text-[#50304d]">
+                  <p className="flex-grow-0 flex-shrink-0 text-2xl font-bold text-right text-primary">
                     {result.analytical_components.fat.value}
                     {result.analytical_components.fat.unit}
                   </p>
@@ -541,10 +522,10 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
             {result.analytical_components.ash && (
               <div className="flex flex-col justify-start items-start self-stretch flex-grow-0 flex-shrink-0 gap-1">
                 <div className="flex justify-between items-center self-stretch flex-grow-0 flex-shrink-0 relative">
-                  <p className="flex-grow-0 flex-shrink-0 text-xl font-semibold text-center text-[#50304d]">
+                  <p className="flex-grow-0 flex-shrink-0 text-xl font-semibold text-center text-primary">
                     Popiół Surowy
                   </p>
-                  <p className="flex-grow-0 flex-shrink-0 text-2xl font-bold text-right text-[#50304d]">
+                  <p className="flex-grow-0 flex-shrink-0 text-2xl font-bold text-right text-primary">
                     {result.analytical_components.ash.value}
                     {result.analytical_components.ash.unit}
                   </p>
@@ -567,10 +548,10 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
             {result.analytical_components.fiber && (
               <div className="flex flex-col justify-start items-start self-stretch flex-grow-0 flex-shrink-0 gap-1">
                 <div className="flex justify-between items-center self-stretch flex-grow-0 flex-shrink-0 relative">
-                  <p className="flex-grow-0 flex-shrink-0 text-xl font-semibold text-center text-[#50304d]">
+                  <p className="flex-grow-0 flex-shrink-0 text-xl font-semibold text-center text-primary">
                     Włókno Surowe
                   </p>
-                  <p className="flex-grow-0 flex-shrink-0 text-2xl font-bold text-right text-[#50304d]">
+                  <p className="flex-grow-0 flex-shrink-0 text-2xl font-bold text-right text-primary">
                     {result.analytical_components.fiber.value}
                     {result.analytical_components.fiber.unit}
                   </p>
@@ -593,10 +574,10 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
           {/* Energia */}
           {result.analytical_components.energy?.kcal_per_100g && (
             <div className="flex flex-col justify-center items-center self-stretch flex-grow-0 flex-shrink-0 relative gap-1 p-4 rounded-3xl bg-slate-100 mt-4">
-              <p className="flex-grow-0 flex-shrink-0 text-[32px] font-bold text-center text-[#1d293d]">
+              <p className="flex-grow-0 flex-shrink-0 text-[32px] font-bold text-center text-primary">
                 {result.analytical_components.energy.kcal_per_100g.value}
               </p>
-              <p className="flex-grow-0 flex-shrink-0 text-base font-semibold text-center text-[#62748e]">
+              <p className="flex-grow-0 flex-shrink-0 text-base font-semibold text-center text-primary/60">
                 kcal na 100g
               </p>
             </div>
@@ -608,10 +589,15 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
       <Card className="flex-col justify-start items-start self-stretch flex-grow-0 flex-shrink-0 overflow-hidden gap-4 p-6 md:p-8 rounded-[32px] md:rounded-[48px]">
         <div className="flex justify-start items-center self-stretch flex-grow-0 flex-shrink-0 gap-3 md:gap-4">
           <div className="">
-            <IconBadge icon={"fluent:pill-24-filled"} color={"cyan"} />
+            <Icon className="w-12 h-12 bg-cyan-500/20">
+              <Iconify
+                icon={"fluent:pill-24-filled"}
+                className="text-cyan-500 text-lg"
+              />
+            </Icon>
           </div>
           <div className="flex flex-col justify-center items-end flex-grow-0 flex-shrink-0 relative">
-            <p className="flex-grow-0 flex-shrink-0 text-xl md:text-2xl font-bold text-left text-[#50304d]">
+            <p className="flex-grow-0 flex-shrink-0 text-xl md:text-2xl font-bold text-left text-primary">
               Witaminy i Minerały
             </p>
           </div>
@@ -620,7 +606,7 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
           {/* Witaminy */}
           {result.vitamins && result.vitamins.length > 0 && (
             <div className="flex flex-col justify-start items-start w-full md:flex-grow md:flex-shrink md:basis-0 relative gap-2.5">
-              <p className="flex-grow-0 flex-shrink-0 text-lg font-bold text-left text-[#50304d]">
+              <p className="flex-grow-0 flex-shrink-0 text-lg font-bold text-left text-primary">
                 Witaminy
               </p>
               <div className="flex flex-col justify-start items-start self-stretch flex-grow-0 flex-shrink-0 gap-2.5">
@@ -631,10 +617,10 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
                       key={index}
                       className="flex justify-between items-center self-stretch flex-grow-0 flex-shrink-0 relative px-4 py-2 rounded-3xl bg-slate-100"
                     >
-                      <p className="flex-grow-0 flex-shrink-0 text-base text-center text-[#50304d]">
-                        {capitalizeFirst(vitamin.name)}
+                      <p className="flex-grow-0 flex-shrink-0 text-base text-center text-primary">
+                        {capitalizeFirstLetter(vitamin.name)}
                       </p>
-                      <p className="flex-grow-0 flex-shrink-0 text-base font-semibold text-center text-[#50304d]">
+                      <p className="flex-grow-0 flex-shrink-0 text-base font-semibold text-center text-primary">
                         {vitamin.value} {vitamin.unit}
                       </p>
                     </div>
@@ -646,7 +632,7 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
           {/* Minerały */}
           {result.minerals && result.minerals.length > 0 && (
             <div className="flex flex-col justify-start items-start w-full md:flex-grow md:flex-shrink md:basis-0 relative gap-2.5">
-              <p className="flex-grow-0 flex-shrink-0 text-lg font-bold text-left text-[#50304d]">
+              <p className="flex-grow-0 flex-shrink-0 text-lg font-bold text-left text-primary">
                 Minerały
               </p>
               <div className="flex flex-col justify-start items-start self-stretch flex-grow-0 flex-shrink-0 gap-2.5">
@@ -657,10 +643,10 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
                       key={index}
                       className="flex justify-between items-center self-stretch flex-grow-0 flex-shrink-0 relative px-4 py-2 rounded-3xl bg-orange-50"
                     >
-                      <p className="flex-grow-0 flex-shrink-0 text-base text-center text-[#50304d]">
-                        {capitalizeFirst(mineral.name)}
+                      <p className="flex-grow-0 flex-shrink-0 text-base text-center text-primary">
+                        {capitalizeFirstLetter(mineral.name)}
                       </p>
-                      <p className="flex-grow-0 flex-shrink-0 text-base font-semibold text-center text-[#50304d]">
+                      <p className="flex-grow-0 flex-shrink-0 text-base font-semibold text-center text-primary">
                         {mineral.value} {mineral.unit}
                       </p>
                     </div>
@@ -672,7 +658,7 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
           {/* Mikroelementy */}
           {result.microelements && result.microelements.length > 0 && (
             <div className="flex flex-col justify-start items-start w-full md:flex-grow md:flex-shrink md:basis-0 relative gap-2.5">
-              <p className="flex-grow-0 flex-shrink-0 text-lg font-bold text-left text-[#50304d]">
+              <p className="flex-grow-0 flex-shrink-0 text-lg font-bold text-left text-primary">
                 Mikroelementy
               </p>
               <div className="flex flex-col justify-start items-start self-stretch flex-grow-0 flex-shrink-0 gap-2.5">
@@ -683,10 +669,10 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
                       key={index}
                       className="flex justify-between items-center self-stretch flex-grow-0 flex-shrink-0 relative px-4 py-2 rounded-3xl bg-green-50"
                     >
-                      <p className="flex-grow-0 flex-shrink-0 text-base text-center text-[#50304d]">
-                        {capitalizeFirst(microelement.name)}
+                      <p className="flex-grow-0 flex-shrink-0 text-base text-center text-primary">
+                        {capitalizeFirstLetter(microelement.name)}
                       </p>
-                      <p className="flex-grow-0 flex-shrink-0 text-base font-semibold text-center text-[#50304d]">
+                      <p className="flex-grow-0 flex-shrink-0 text-base font-semibold text-center text-primary">
                         {microelement.value} {microelement.unit}
                       </p>
                     </div>
@@ -697,7 +683,7 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
         </div>
       </Card>
 
-      {/* Alergeny and Odpowiednie dla - Side by Side */}
+      {/* Alergeny i Odpowiednie dla */}
       <div className="flex flex-col lg:flex-row gap-4">
         {/* Alergeny Section */}
         <Card className="flex-col gap-4 flex-1">
@@ -718,18 +704,18 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
                       icon="jam:triangle-danger-f"
                       className="w-[18px] h-[18px] text-red-500"
                     />
-                    <p className="text-lg font-bold text-purple-900">
+                    <p className="text-lg font-bold text-primary">
                       Wykryto Alergeny
                     </p>
                   </div>
-                  <div className="flex flex-col">
+                  <div className="flex flex-col gap-1">
                     {result.allergens.detected.map((allergen, index) => (
                       <div
                         key={index}
                         className="flex justify-between items-center"
                       >
-                        <p className="text-base text-purple-900">
-                          {capitalizeFirst(allergen)}
+                        <p className="text-base text-primary">
+                          {capitalizeFirstLetter(allergen)}
                         </p>
                         <div className="flex justify-center items-center px-3 py-1 rounded-full bg-red-200">
                           <p className="text-xs font-medium text-red-700">
@@ -751,7 +737,7 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
                       icon="jam:triangle-danger-f"
                       className="w-[18px] h-[18px] text-amber-500"
                     />
-                    <p className="text-lg font-bold text-purple-900">
+                    <p className="text-lg font-bold text-primary">
                       Potencjalne Alergeny
                     </p>
                   </div>
@@ -761,8 +747,8 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
                         key={index}
                         className="flex justify-between items-center"
                       >
-                        <p className="text-base text-purple-900">
-                          {capitalizeFirst(allergen)}
+                        <p className="text-base text-primary">
+                          {capitalizeFirstLetter(allergen)}
                         </p>
                         <div className="flex justify-center items-center px-3 py-1 rounded-full bg-yellow-200">
                           <p className="text-xs font-medium text-amber-700">
@@ -788,7 +774,7 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
                       icon="mdi:check-circle-outline"
                       className="w-[18px] h-[18px] text-green-600"
                     />
-                    <p className="text-lg font-bold text-purple-900">
+                    <p className="text-lg font-bold text-primary">
                       Bezpieczne - Brak Alergenów
                     </p>
                   </div>
@@ -804,7 +790,7 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
                     icon="ep:success-filled"
                     className="w-[18px] h-[18px] text-green-600"
                   />
-                  <p className="text-lg font-bold text-purple-900">
+                  <p className="text-lg font-bold text-primary">
                     Cechy Produktu
                   </p>
                 </div>
@@ -902,7 +888,7 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
               </p>
               <p className="flex-grow-0 flex-shrink-0 text-lg md:text-xl font-medium text-left md:text-center text-white/95">
                 {result.verdict.final_rating
-                  ? capitalizeFirst(result.verdict.final_rating)
+                  ? capitalizeFirstLetter(result.verdict.final_rating)
                   : "Brak oceny"}
               </p>
             </div>
@@ -926,7 +912,7 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData2 }) => {
                     >
                       <Iconify
                         icon="mdi:check-circle"
-                        className="w-5 h-5 text-[#9ae600] flex-shrink-0 mt-0.5"
+                        className="w-5 h-5 text-lime-300 flex-shrink-0 mt-0.5"
                       />
                       <span>{advantage}</span>
                     </div>
