@@ -9,6 +9,7 @@
   --color-primary: #50304d;
   --color-secondary: #9c6a49;
   --color-orange: #f9c09a;
+  --radius-5xl: 3rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,7 +20,7 @@
 }
 
 body {
-  background: url("/background.svg") repeat;
+  background: url("/background.svg") repeat top;
   background-size: cover;
   color: var(--foreground);
   font-family: "Manrope", sans-serif;
