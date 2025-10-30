@@ -167,6 +167,86 @@ export interface AnalysisResultData {
 }
 `;
 
+const dogChecklist = `
+    Mięso na 1. miejscu w składzie
+    Zawartość mięsa powyżej 25%
+    Zawartość mięsa powyżej 50%
+    Zawartość mięsa powyżej 75%
+    Zawartość mięsa powyżej 95%
+    Jasno określona nazwa mięsa i źródła białka (np. „indyk 40%”)
+    Brak zbóż
+    Brak ryżu
+    Brak soi
+    Brak kukurydzy
+    Brak glutenu zbożowego
+    Brak grochu/groszku i innych roślin strączkowych
+    Brak ziemniaków jako główny składnik
+    Brak cukru i syropów
+    Brak sztucznych barwników
+    Brak sztucznych konserwantów (np. BHA, BHT)
+    Brak aromatów i wzmacniaczy smaku
+    Naturalne konserwanty (witamina E)
+    Oleje rybie lub lniany w składzie
+    Obecność warzyw w umiarkowanej, jasno określonej ilości
+    Wielkość i forma karmy dopasowana do rasy i wieku
+    <30% węglowodanów
+    Adaptacja do wieku psa (szczeniak/dorosły/senior)
+    Adaptacja do wielkości psa (mini/mały/średni/duży)
+    Adaptacja do aktywności (np. sport, seniorzy)
+    Zawartość glukozaminy, chondroityny, MSM (dla stawów)
+    Odpowiednia zawartość białka (20-30% suchej masy)
+    Odpowiednia zawartość tłuszczu (10-18%)
+    <5% surowego popiołu
+    Zbilansowany poziom wapnia i fosforu (Ca:P ≈ 1,3:1)
+    Zawartość kwasów omega-3 i omega-6
+    Brak GMO
+    Przejrzysta, szczegółowa etykieta
+    Informacje o pochodzeniu składników (np. kraje UE)
+    Karma kompletna (pełnoporcjowa)
+    Brak testowania na zwierzętach laboratoryjnych
+    Brak surowców o niejasnym pochodzeniu („produkty zwierzęce” bez szczegółów)
+`;
+
+const catChecklist = `
+    Mięso na 1. miejscu w składzie
+    Zawartość mięsa powyżej 25%
+    Zawartość mięsa powyżej 50%
+    Zawartość mięsa powyżej 75%
+    Zawartość mięsa powyżej 95%
+    Jasno określona nazwa mięsa (np. „kurczak 50%” zamiast „produkty pochodzenia zwierzęcego”)
+    Brak zbóż
+    Brak ryżu
+    Brak soi
+    Brak kukurydzy
+    Brak glutenu zbożowego
+    Brak grochu/groszku i innych roślin strączkowych
+    Brak ziemniaków
+    Brak cukru i syropu glukozowego
+    Brak sztucznych barwników
+    Brak sztucznych konserwantów (np. BHA, BHT, sorbinian potasu)
+    Naturalne konserwanty (np. tokoferole, witamina E)
+    Brak aromatów i wzmacniaczy smaku
+    Brak zagęszczaczy syntetycznych (np. guma guar, karagen)
+    Brak dodatków mlecznych/laktozy
+    Brak podrobów niższej jakości (np. pióra, racice, kopyta)
+    Zawartość tauryny (co najmniej 1000 mg/kg)
+    Brak udziału produktów roślinnych w pierwszej piątce składu
+    <15% węglowodanów w suchej masie
+    <5% surowego popiołu
+    <0,2% soli (NaCl)
+    Optymalny poziom fosforu (1-1,2% w suchej masie)
+    Zawartość kwasów omega-3 i omega-6
+    Zbilansowany poziom wapnia i fosforu (Ca:P ≈ 1,2:1)
+    Skład dopasowany do wieku kota (kocię/dorosły/senior)
+    Skład dopasowany do szczególnych potrzeb (np. sterilizowane, indoor, alergie)
+    Brak GMO
+    Informacja o pochodzeniu składników (np. kraje UE)
+    Przejrzysta etykieta bez ukrywania ilości składników
+    Krótka lista składników (max. 10-12 pozycji)
+    Testy bezpieczeństwa potwierdzone przez niezależne laboratoria
+    Karma kompletna (pełnoporcjowa – nie uzupełniająca)
+`;
+
 const SYSTEM = minifyText(`
         Jesteś ekspertem od analizy składu karmy dla zwierząt.
         
@@ -239,6 +319,9 @@ const SYSTEM = minifyText(`
         - Jakość: 20%
         - Brak dodatków: 15%
         - Transparentność etykiety: 10%
+
+        OGÓLNA OCENA ŁĄCZNA (overall_rating) MA BYĆ OBLICZANA NA PODSTAWIE CHECKLISTY PUNKTÓW (np. 13/37) I PRZELICZONA NA SKALĘ OD 0 DO 100, PRZY ZAOKRĄGLANIU W DÓŁ (GORZSZA WARTOŚĆ).
+
         DLA: 
         meat_quality
         protein_content
@@ -266,7 +349,6 @@ const SYSTEM = minifyText(`
         Jeżeli jednostka jest inna niż dozwolone, przelicz na jedną z dozwolonych jednostek.
         NIE DODAWAJ ŻADNYCH INNYCH PÓL NIŻ TE Z INTERFEJSU!
         WILGTOŚĆ = humidity
-        ZWRÓĆ ENERGIA JAKO OBIEKT Measurement 
         PAMIĘTAJ: Każde pole w schemacie MUSI być wypełnione - jeśli nie wiesz, zwróć null, ale pole musi istnieć w odpowiedzi!
       `);
 // Schema walidacji inputu
@@ -329,7 +411,10 @@ export async function POST(req: Request) {
       // model: "openai/gpt-5-nano",
       maxOutputTokens: 32000,
       // model: "amazon/nova-micro",
-      system: SYSTEM,
+      system:
+        SYSTEM +
+        "\n\nDODATKOWO, uwzględnij następującą checklistę podczas oceny:\n" +
+        (selectedAnimal === "dog" ? dogChecklist : catChecklist),
       prompt: `Przeanalizuj dokładnie poniższy skład karmy dla ${
         selectedAnimal === "dog" ? "psów" : "kotów"
       }:\n\n"${sanitizedValue}"\n\nZwróć KOMPLETNĄ analizę jako CZYSTY JSON zgodny z interfejsem TypeScript. MUSISZ wypełnić WSZYSTKIE pola (jeśli nie znasz wartości, zwróć null).\n\nKRYTYCZNE: Zwróć TYLKO czysty JSON, bez żadnych markdown code blocks ani dodatkowych znaków!`,
