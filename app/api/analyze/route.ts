@@ -345,6 +345,8 @@ const SYSTEM = minifyText(`
         
         Jeśli skład w innym języku → przetłumacz na polski.
         Jeśli jednostki imperialne → przelicz na metryczne.
+
+        W SEKCJI WITAMINY I MINERAŁY JAK JEST NP CYNK TO PODAJ TYLKO NAZWĘ (NP CYNK, A NIE CYNK (jednowodny siarczan cynku) INNE TAK SAMO)
         
         Jeżeli jednostka jest inna niż dozwolone, przelicz na jedną z dozwolonych jednostek.
         NIE DODAWAJ ŻADNYCH INNYCH PÓL NIŻ TE Z INTERFEJSU!
