@@ -93,11 +93,7 @@ export interface AnalysisResultData {
     fiber: Measurement | null; // Włókno surowe
     ash: Measurement | null; // Popiół surowy
     carbohydrates: Measurement | null; // Węglowodany
-    energy: {
-      kcal_per_100g: Measurement | null; // kcal na 100g
-      kJ_per_100g: Measurement | null; // kJ na 100g
-    };
-
+    kcal_per_100g: number | null; // kcal na 100g
     // wartości przeliczone na suchą masę (jeśli wilgotność znana)
     protein_dry_matter?: Measurement | null; // Białko na suchej masie
     fat_dry_matter?: Measurement | null; // Tłuszcz na suchej masie

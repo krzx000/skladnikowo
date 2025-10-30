@@ -3,11 +3,13 @@ import { useRef, useEffect, useState } from "react";
 import { Button } from "./Button";
 import { Sparkles, LoaderCircle } from "lucide-react";
 import { AnalysisResultData } from "@/lib/types";
-
+import { animateScroll as scroll } from "react-scroll";
 export const AnalyzeInput = ({
   onResultChange,
+  animalType,
 }: {
   onResultChange: (result: AnalysisResultData | null) => void;
+  animalType: "dog" | "cat";
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isMultiline, setIsMultiline] = useState(false);
@@ -117,13 +119,14 @@ export const AnalyzeInput = ({
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ value }),
+      body: JSON.stringify({ value, animalType }),
     });
 
     const text = await res.text(); // pobieramy cały tekst od razu
     try {
       const json: AnalysisResultData = JSON.parse(text);
       onResultChange(json);
+      scroll.scrollToTop({ smooth: true, duration: 250 }); // przewiń na górę po otrzymaniu wyniku
       setValue(""); // Wyczyść input po otrzymaniu wyniku
     } catch (err) {
       console.error("Błąd parsowania JSON:", err);

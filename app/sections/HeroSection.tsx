@@ -28,7 +28,7 @@ const Feature = ({
 );
 
 export const HeroSection = () => {
-  const [selectedValue, setSelectedValue] = useState("humans");
+  const [selectedAnimal, setSelectedAnimal] = useState<"dog" | "cat">("cat");
   const [result, setResult] = useState<AnalysisResultData | null>(null);
 
   const features = [
@@ -77,16 +77,19 @@ export const HeroSection = () => {
       {/* Formularz */}
       <div className="flex flex-col items-center w-full gap-4">
         <Picker
-          onSelect={setSelectedValue}
-          selectedValue={selectedValue}
+          onSelect={(v) => setSelectedAnimal(v as "dog" | "cat")}
+          selectedValue={selectedAnimal}
           items={[
-            { label: "Żywność dla ludzi", value: "humans" },
-            { label: "Karma dla zwierząt", value: "animals" },
+            { label: "Karma dla kotów", value: "cat" },
+            { label: "Karma dla psów", value: "dog" },
           ]}
         />
 
         <div className="w-full max-w-2xl">
-          <AnalyzeInput onResultChange={setResult} />
+          <AnalyzeInput
+            onResultChange={setResult}
+            animalType={selectedAnimal}
+          />
         </div>
 
         {result && (

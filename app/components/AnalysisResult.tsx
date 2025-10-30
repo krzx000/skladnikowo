@@ -204,7 +204,13 @@ const SuitableCard = ({
   );
 };
 
-export const AnalysisResult = ({ result }: { result: AnalysisResultData }) => {
+export const AnalysisResult = ({
+  result,
+  example,
+}: {
+  result: AnalysisResultData;
+  example?: boolean;
+}) => {
   if (!result) {
     return (
       <Card className="bg-red-50 border-red-200">
@@ -366,19 +372,22 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData }) => {
     .sort((a, b) => b.totalPercentage - a.totalPercentage);
 
   return (
-    <article className="flex flex-col gap-4 md:gap-8">
+    <article
+      id={example ? undefined : "analysis-result"}
+      className="flex flex-col gap-4 md:gap-8"
+    >
       <Card className="bg-gradient-to-r flex flex-col md:flex-row w-full justify-between items-center from-orange via-orange-400 to-red-400 outline-1 outline-offset-[-1px] outline-white/25 gap-6 md:gap-0">
         <div className="self-stretch inline-flex flex-col justify-between items-start gap-4 md:gap-0 w-full md:w-auto">
           <div className="flex flex-col justify-start items-start gap-1">
-            <h1 className="text-left md:text-center justify-center text-white text-2xl md:text-3xl font-extrabold">
+            <h1 className="text-left justify-center text-white text-2xl md:text-3xl font-extrabold">
               {result.name || "Nazwa nieznana"}
             </h1>
-            <p className="text-left md:text-center justify-center text-white/95 text-lg md:text-xl font-medium">
+            <p className="text-left justify-center text-white/95 text-lg md:text-xl w-full font-medium">
               {result.producent || "Producent nieznany"}
             </p>
           </div>
           <div
-            className="inline-flex flex-wrap justify-start items-start gap-2 md:gap-4"
+            className="inline-flex flex-wrap justify-start items-start gap-4"
             role="list"
             aria-label="Informacje o produkcie"
           >
@@ -405,7 +414,7 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData }) => {
             <div className="text-left md:text-center justify-center text-white text-5xl md:text-6xl font-extrabold leading-tight md:leading-[64px]">
               {result.rate.score_0_100}
             </div>
-            <div className="text-left md:text-center justify-center text-white/95 text-lg md:text-xl font-medium">
+            <div className="text-right max-md:text-center justify-center text-white/95 text-lg md:text-xl font-medium">
               Ogólna ocena
             </div>
           </div>
@@ -725,10 +734,10 @@ export const AnalysisResult = ({ result }: { result: AnalysisResultData }) => {
           </div>
 
           {/* Energia */}
-          {result.analytical_components.energy?.kcal_per_100g && (
+          {result.analytical_components.kcal_per_100g && (
             <div className="flex flex-col justify-center items-center self-stretch flex-grow-0 flex-shrink-0 relative gap-1 p-4 rounded-3xl bg-slate-100 mt-4">
               <p className="flex-grow-0 flex-shrink-0 text-3xl font-bold text-center text-primary">
-                {result.analytical_components.energy.kcal_per_100g.value}
+                {result.analytical_components.kcal_per_100g}
               </p>
               <p className="flex-grow-0 flex-shrink-0 text-base font-semibold text-center text-primary/60">
                 kcal na 100g

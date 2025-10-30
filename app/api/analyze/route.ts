@@ -102,11 +102,7 @@ export interface AnalysisResultData {
     fiber: Measurement | null; // Włókno surowe
     ash: Measurement | null; // Popiół surowy
     carbohydrates: Measurement | null; // Węglowodany
-    energy: {
-      kcal_per_100g: Measurement | null; // kcal na 100g
-      kJ_per_100g: Measurement | null; // kJ na 100g
-    };
-
+    kcal_per_100g: number | null; // kcal na 100g
     // wartości przeliczone na suchą masę (jeśli wilgotność znana)
     protein_dry_matter?: Measurement | null; // Białko na suchej masie
     fat_dry_matter?: Measurement | null; // Tłuszcz na suchej masie
@@ -217,7 +213,7 @@ const SYSTEM = minifyText(`
         OCENA wg AAFCO/FEDIAF:
         - Białko, tłuszcz, minerały, Ca/P, witaminy, błonnik, energia, wilgotność
         - Junior/Senior > odpowiednie normy
-        - Brak danych > typowe wartości (oznacz przybliżenie)
+        - Brak danych > null w ocenie z uzasadnieniem w komentarzu
         
         JAKOŚĆ składników (ważność malejąca):
         1. Mięso świeże
@@ -249,11 +245,18 @@ const SYSTEM = minifyText(`
         fat_content
         calcium_phosphorus_ratio
         vitamin_supplementation
-        macro_balance w descriptio maksymalnie 12 słów.
-
+        macro_balance w description maksymalnie 12 słów.
 
         75+ TYLKO dla karm wysokiej jakości z czystym składem!
-        
+
+        JEŚLI SKŁAD JEST NIEWYSTARCZAJĄCY DO PEŁNEJ ANALIZY, ZWRÓĆ NAJLEPSZĄ MOŻLIWĄ ANALIZĘ I UZASADNIJ BRAKI W KOMENTARZU.
+
+        JEŚLI SKŁAD JEST BARDZO SŁABY (DUŻO WYPEŁNIACZY, BRAK MIĘSA), DAJ NISKĄ OCENĘ I UZASADNIJ TO W KOMENTARZU.
+
+        JEŚLI KARMA JEST ODPOWIEDNIA TYLKO DLA JEDNEJ GRUPY WIEKOWEJ, ZAZNACZ TO W WERDYKCIE, PRZY CZYM INNE GRUPY WIEKOWE OTRZYMUJĄ FALSE (CHYBA, ŻE JEST UNIWERSALNA).
+     
+        Jeśli składnik ma niską jakość (np. „produkty pochodzenia zwierzęcego”, „zboża”, „mączki”) – odnotuj to w komentarzu i obniż ocenę.
+
         Bądź surowy, dokładny, logiczny, transparentny i spójny.
         Werdykt: jasny, rzeczowy, bez marketingu.
         
@@ -293,9 +296,10 @@ export async function POST(req: Request) {
   try {
     // Parsuj body
     const body = await req.json();
-
     // Walidacja inputu
     const validationResult = AnalyzeInputSchema.safeParse(body);
+
+    const selectedAnimal = body.animalType;
 
     if (!validationResult.success) {
       const errors = validationResult.error.issues.map((err) => ({
@@ -326,7 +330,9 @@ export async function POST(req: Request) {
       maxOutputTokens: 32000,
       // model: "amazon/nova-micro",
       system: SYSTEM,
-      prompt: `Przeanalizuj dokładnie poniższy skład karmy dla zwierząt (psów/kotów):\n\n"${sanitizedValue}"\n\nZwróć KOMPLETNĄ analizę jako CZYSTY JSON zgodny z interfejsem TypeScript. MUSISZ wypełnić WSZYSTKIE pola (jeśli nie znasz wartości, zwróć null).\n\nKRYTYCZNE: Zwróć TYLKO czysty JSON, bez żadnych markdown code blocks ani dodatkowych znaków!`,
+      prompt: `Przeanalizuj dokładnie poniższy skład karmy dla ${
+        selectedAnimal === "dog" ? "psów" : "kotów"
+      }:\n\n"${sanitizedValue}"\n\nZwróć KOMPLETNĄ analizę jako CZYSTY JSON zgodny z interfejsem TypeScript. MUSISZ wypełnić WSZYSTKIE pola (jeśli nie znasz wartości, zwróć null).\n\nKRYTYCZNE: Zwróć TYLKO czysty JSON, bez żadnych markdown code blocks ani dodatkowych znaków!`,
     });
 
     console.log("AI Response:", result);
